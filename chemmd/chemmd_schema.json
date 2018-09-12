@@ -1,0 +1,203 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+      "node_information": {
+        "type": "object",
+        "properties": {
+          "node_title": {
+            "type": "string"
+          },
+          "node_description": {
+            "type": "string"
+          },
+          "node_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "submission_date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "public_release_date": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "node_title",
+          "node_url"
+        ]
+      },
+      "factor": {
+        "type": "object",
+        "properties": {
+          "factor_type": {
+            "type": "string"
+          },
+          "decimal_value": {
+            "type": "number"
+          },
+          "string_value": {
+            "type": "string"
+          },
+          "reference_value": {
+            "type": "string"
+          },
+          "unit_reference": {
+            "type": "string"
+          },
+          "csv_column_index": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "factorType"
+        ]
+      },
+      "factor_array": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/factor"
+        }
+      },
+      "species": {
+        "type": "object",
+        "properties": {
+          "species_reference": {
+            "type": "string"
+          },
+          "stoichiometry": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "speciesReference"
+        ]
+      },
+      "species_array": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/species"
+        }
+      },
+      "comment": {
+        "type": "object",
+        "properties": {
+          "comment_title": {
+            "type": "string"
+          },
+          "comment_body": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "commentTitle",
+          "commentBody"
+        ]
+      },
+      "comment_array": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/comment"
+        }
+      },
+      "source": {
+        "type": "object",
+        "properties": {
+          "source_name": {
+            "type": "string"
+          },
+          "source_factors": {
+            "$ref": "#/definitions/factor_array"
+          },
+          "source_species": {
+            "$ref": "#/definitions/species_array"
+          },
+          "source_comments": {
+            "$ref": "#/definitions/comment_array"
+          }
+        }
+      },
+      "source_array": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/source"
+        }
+      },
+      "sample": {
+        "type": "object",
+        "properties": {
+          "sample_name": {
+            "type": "string"
+          },
+          "sample_factors": {
+            "$ref": "#/definitions/factor_array"
+          },
+          "sample_species": {
+            "$ref": "#/definitions/species_array"
+          },
+          "sample_comments": {
+            "$ref": "#/definitions/comment_array"
+          },
+          "sample_sources": {
+            "$ref": "#/definitions/source_array"
+          }
+        }
+      },
+      "sample_array": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/sample"
+        }
+      },
+      "assay": {
+        "type": "object",
+        "properties": {
+          "assay_title": {
+            "type": "string"
+          },
+          "assay_comments": {
+            "$ref": "#/definitions/comment_array"
+          },
+          "assay_factors": {
+            "$ref": "#/definitions/factor_array"
+          },
+          "assay_samples": {
+            "$ref": "#/definitions/sample_array"
+          },
+          "assay_datafile": {
+            "type": "string"
+          }
+        }
+      },
+      "assay_array": {
+        "type": "object",
+        "items": {
+          "$ref": "#/definitions/assay"
+        }
+      }
+    },
+    "type": "object",
+    "title": "drupal_node",
+    "properties": {
+      "node_information": {
+        "$ref": "#/definitions/node_information"
+      },
+      "node_comments": {
+        "$ref": "#/definitions/comment_array"
+      },
+      "node_factors": {
+        "$ref": "#/definitions/factor_array"
+      },
+      "node_assays": {
+        "$ref": "#/definitions/assay_array"
+      },
+      "node_samples": {
+        "$ref": "#/definitions/sample_array"
+      }
+    },
+    "required": [
+      "node_information",
+      "node_assays"
+    ]
+  }

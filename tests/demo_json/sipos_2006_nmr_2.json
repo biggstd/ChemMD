@@ -1,0 +1,102 @@
+{
+    "node_information": {
+        "node_title": "Sipos 2006, Talanta NMR Figure 2",
+        "node_description": "Extracted figures.",
+        "node_url": "www.url.com",
+        "submission_date": "2018-5-25",
+        "public_release_date": "2006-03-13"
+    },
+    "node_factors": [
+        {
+            "factor_type": "Measurement Condition",
+            "decimal_value": 25.0,
+            "unit_reference": "Celsius"
+        },
+        {
+            "factor_type": "Measurement",
+            "unit_reference": "ppm",
+            "reference_value": "27_Al",
+            "csv_column_index": 2
+        },
+        {
+            "factor_type": "Measurement Condition",
+            "decimal_value": 78.204,
+            "reference_value": "27_Al",
+            "unit_reference": "MHz"
+        },
+        {
+            "factor_type": "Measurement Reference",
+            "unit_reference": "27_Al Reference Compound",
+            "reference_value": "[KAl(SO4)2]"
+        }
+    ],
+    "node_samples": [
+        {
+            "sample_name": "Aluminate Solution",
+            "sample_factors": [
+                {
+                    "factor_type": "Measurement Condition",
+                    "unit_reference": "Molar",
+                    "csv_column_index": 0
+                }
+            ],
+            "sample_species": [
+                {
+                    "species_reference": "Al(III)",
+                    "stoichiometry": 1.0
+                }
+            ],
+            "sample_sources": [
+                {
+                    "source_name": "Aluminum Wire",
+                    "source_factors": [
+                        {
+                            "factor_type": "Material Property",
+                            "decimal_value": 0.98,
+                            "unit_reference": "Percent",
+                            "reference_value": "Purity by Weight"
+                        }
+                    ],
+                    "source_species": [
+                        {
+                            "species_reference": "Al(III)",
+                            "stoichiometry": 1.0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "sample_name": "Sodium Hydroxide Solution",
+            "sample_factors": [
+                {
+                    "factor_type": "Measurement Condition",
+                    "unit_reference": "Molar",
+                    "csv_column_index": 1
+                }
+            ],
+            "sample_species": [
+                {
+                    "species_reference": "Na+",
+                    "stoichiometry": 1.0
+                },
+                {
+                    "species_reference": "OH-",
+                    "stoichiometry": 1.0
+                }
+            ]
+        }
+    ],
+    "node_assays": [
+        {
+            "assay_title": "Al 27 NMR of Sodium Aluminate",
+            "assay_datafile": "sipos_2006_talanta_fig_2.csv"
+        }
+    ],
+    "node_comments": [
+        {
+            "comment_title": "Study level comment on Sipos 2006.",
+            "body": "I manually pulled this points out with a web tool."
+        }
+    ]
+}
