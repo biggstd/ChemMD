@@ -1,7 +1,7 @@
 """Helper functions for creating Bokeh applications.
 
 
-Helpers transform the pandas data frames and metadata dictionaries provied
+Helpers transform the pandas data frames and metadata dictionaries provided
 by the ``io`` module.
 
 """
@@ -174,7 +174,7 @@ def get_group_keys(group):
 
 
 # ----------------------------------------------------------------------------
-# Derived Column Perpareation Functions
+# Derived Column Preparation Functions
 # ----------------------------------------------------------------------------
 
 

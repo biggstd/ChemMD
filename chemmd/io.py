@@ -362,8 +362,7 @@ def collate_node(drupal_node: DrupalNode,
     """Collate the matching data and metadata from a given drupal node
     by the given groups.
 
-    TODO: More discussion on the logic of this function.
-
+    TODO: Convert to a graph-based solution. Use either ChainMap or NetworkX.
     """
     # Create the uuid for the DrupalNode, and add it to the metadata dictionary.
     drupal_node_uuid = create_uuid(drupal_node)

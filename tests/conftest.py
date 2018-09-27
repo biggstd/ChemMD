@@ -155,7 +155,22 @@ def sipos_drupal_node(sipos_nmr_json):
 
 @pytest.fixture
 def sipos_nmr_json():
-    return SIPOS
+    return demos["SIPOS_NMR"]
+
+
+@pytest.fixture
+def sipos_nmr2_json():
+    return demos["SIPOS_NMR_2"]
+
+
+@pytest.fixture
+def ernesto_nmr():
+    return demos["ERNESTO_NMR_1"]
+
+
+@pytest.fixture
+def sipos_raman():
+    return demos["SIPOS_RAMAN"]
 
 
 # ----------------------------------------------------------------------------
