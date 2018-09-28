@@ -115,7 +115,7 @@ def load_session_data(x_groups: QueryGroupType,
 
 
 # ----------------------------------------------------------------------------
-# Data Perpareation Functions
+# Data Preparation Functions
 # ----------------------------------------------------------------------------
 
 
@@ -201,7 +201,7 @@ def create_derived_column(data_frame: pd.DataFrame,
 
 
 # ----------------------------------------------------------------------------
-# Callback Helper Functions
+# Callback Functions
 # ----------------------------------------------------------------------------
 
 
