@@ -16,7 +16,7 @@ from chemmd import config, demos
 
 from chemmd import io
 from chemmd.models.core import Factor, SpeciesFactor, Comment
-from chemmd.models.nodal import SourceNode, SampleNode, AssayNode, DrupalNode
+from chemmd.models.nodal import SourceNode, SampleNode, AssayNode, Node
 
 # ----------------------------------------------------------------------------
 # Globals and constants
@@ -136,11 +136,11 @@ def assay_node_fixtures(factor_fixtures, sample_node_fixtures,
 @pytest.fixture
 def drupal_node_fixture_a(assay_node_fixtures, factor_fixtures,
                           sample_node_fixtures, comment_factor_fixtures):
-    return DrupalNode(**dict(title="Drupal Node A",
-                             assays=assay_node_fixtures,
-                             factors=factor_fixtures,
-                             samples=sample_node_fixtures,
-                             comments=comment_factor_fixtures))
+    return Node(**dict(title="Drupal Node A",
+                       assays=assay_node_fixtures,
+                       factors=factor_fixtures,
+                       samples=sample_node_fixtures,
+                       comments=comment_factor_fixtures))
 
 
 @pytest.fixture

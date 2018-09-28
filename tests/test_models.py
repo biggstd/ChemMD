@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------------
 
 from chemmd.models.core import Factor, SpeciesFactor, Comment
-from chemmd.models.nodal import DrupalNode, SampleNode, SourceNode, AssayNode
+from chemmd.models.nodal import Node, SampleNode, SourceNode, AssayNode
 
 
 # ----------------------------------------------------------------------------
@@ -58,4 +58,4 @@ def test_assay_node_creation(assay_node_fixtures):
 
 
 def test_drupal_node_creation(drupal_node_fixture_a):
-    assert isinstance(drupal_node_fixture_a, DrupalNode)
+    assert isinstance(drupal_node_fixture_a, Node)

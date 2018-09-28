@@ -6,7 +6,7 @@ ChemMD ``models`` can be created from:
 
 + .json source files
 
-ChemMD ``models`` can be output to dataframe, metadata dictionary pairs
+ChemMD ``models`` can be output to data frame, metadata dictionary pairs
 with the use of ``query groups``.
 
 
@@ -18,22 +18,22 @@ with the use of ``query groups``.
 
 import collections
 import csv
-import itertools
+# import itertools
 import json
 import logging
 import os
 import uuid
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 import pandas as pd
 import numpy as np
 
 from . import config
 
-from .models import util
-from .models.core import Comment, Factor, SpeciesFactor, ElementalTypes
+# from .models import util
+from .models.core import Comment, Factor, SpeciesFactor, DataFile
 from .models.core import QueryGroupType
-from .models.nodal import (AssayNode, DrupalNode, SampleNode,
+from .models.nodal import (AssayNode, Node, SampleNode,
                            SourceNode, NodeTypes)
 from .display.transforms import TRANSFORMS
 
@@ -43,13 +43,14 @@ logger = logging.getLogger(__name__)
 # ----------------------------------------------------------------------------
 # Top level API functions.
 # ----------------------------------------------------------------------------
+ElementalTypes = Union[Factor, SpeciesFactor, Comment, DataFile]
 
 
-def create_drupal_nodes(json_files: List[str]) -> List[DrupalNode]:
-    """Create multiple DrupalNode models from a list of json files.
+def create_nodes_from_files(json_files: List[str]) -> List[Node]:
+    """Create multiple Node models from a list of json files.
 
     :param json_files: A list of json file paths as strings.
-    :returns: A list of DrupalNode objects.
+    :returns: A list of Node objects.
 
     """
 
@@ -59,14 +60,14 @@ def create_drupal_nodes(json_files: List[str]) -> List[DrupalNode]:
 
 def prepare_nodes_for_bokeh(x_groups: QueryGroupType,
                             y_groups: QueryGroupType,
-                            nodes: List[DrupalNode]
-                            ) -> Tuple[pd.DataFrame, dict]:
+                            nodes: List[Node]
+                            ) -> Tuple[pd.DataFrame, pd.DataFrame, dict]:
     """Prepare a main pd.DataFrame and a metadata ChainMap from a
-    list of DrupalNodes.
+    list of `Node`s.
 
     :param x_groups: A user-given grouping query for X-axis values.
     :param y_groups: A user-given grouping query for Y-axis values.
-    :param drupal_nodes: A list of DrupalNode objects to apply the
+    :param nodes: A list of Node objects to apply the
         group queries to.
 
     :returns: A populated pd.DataFrame and a ChainMap with all the
@@ -77,13 +78,8 @@ def prepare_nodes_for_bokeh(x_groups: QueryGroupType,
     cds_frames = []
     metadata_dict = {}
 
-    for drupal_node in nodes:
-
-        # try:
-        data, metadata = collate_node(drupal_node, x_groups + y_groups)
-        # except ValueError as error:
-            # print(error)
-            
+    for node in nodes:
+        data, metadata = collate_node(node, x_groups + y_groups)
         cds_frames.append(pd.DataFrame(data))
         metadata_dict = {**metadata_dict, **metadata}
 
@@ -92,11 +88,11 @@ def prepare_nodes_for_bokeh(x_groups: QueryGroupType,
     main_df = main_df.reset_index(drop=True)
 
     # The main_data_frame comes with metadata - data column pairs. Split
-    # these columns and return two different dataframes.
+    # these columns and return two different data frames.
     # TODO: Re-examine this code. Should I need to swap levels here?
     # Perhaps this arrangement should be set as the default.
     main_df = main_df.swaplevel(0, 1, axis=1).xs("data", axis=1)
-    metadata_df = data.swaplevel(0, 1, axis=1).xs("metadata", axis=1)
+    metadata_df = main_df.swaplevel(0, 1, axis=1).xs("metadata", axis=1)
 
     return main_df, metadata_df, metadata_dict
 
@@ -176,8 +172,8 @@ def parse_assays(json_dict: dict) -> AssayNode:
                      comments=comments, factors=factors, samples=samples)
 
 
-def parse_node_json(json_dict: dict) -> DrupalNode:
-    """Convert a dictionary to a DrupalNode object.
+def parse_node_json(json_dict: dict) -> Node:
+    """Convert a dictionary to a Node object.
     """
     # Info, factors and comments can be directly created from the json.
     node_information = json_dict.get("node_information")
@@ -193,8 +189,8 @@ def parse_node_json(json_dict: dict) -> DrupalNode:
         assay.parental_info = node_information
         assay.parental_comments = comments
 
-    return DrupalNode(node_information=node_information, assays=assays,
-                      factors=factors, samples=samples, comments=comments)
+    return Node(node_information=node_information, assays=assays,
+                factors=factors, samples=samples, comments=comments)
 
 
 # ----------------------------------------------------------------------------
@@ -290,7 +286,7 @@ def collate_group_matches(node_samples: List[SampleNode],
 
 def parse_species_factor_match(sample: SampleNode,
                                group: QueryGroupType,
-                               experiment: DrupalNode
+                               experiment: Node
                                ) -> List[str]:
     """Parse a matching SpeciesFactor. 
 
@@ -317,7 +313,7 @@ def parse_species_factor_match(sample: SampleNode,
 def parse_group_match(factor: Factor,
                       sample: SampleNode,
                       group: QueryGroupType,
-                      experiment: DrupalNode
+                      experiment: Node
                       ) -> List:
     """Pares a matching group. Handles normal and csv index factors.
     """
@@ -356,7 +352,7 @@ def create_uuid(metadata_node):
     return str(uuid.uuid3(uuid.NAMESPACE_DNS, str(metadata_node)))
 
 
-def collate_node(drupal_node: DrupalNode,
+def collate_node(drupal_node: Node,
                  groups: QueryGroupType
                  ) -> Tuple[pd.DataFrame, dict]:
     """Collate the matching data and metadata from a given drupal node
@@ -364,7 +360,7 @@ def collate_node(drupal_node: DrupalNode,
 
     TODO: Convert to a graph-based solution. Use either ChainMap or NetworkX.
     """
-    # Create the uuid for the DrupalNode, and add it to the metadata dictionary.
+    # Create the uuid for the Node, and add it to the metadata dictionary.
     drupal_node_uuid = create_uuid(drupal_node)
     metadata = {drupal_node_uuid: drupal_node}
 

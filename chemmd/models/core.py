@@ -213,7 +213,7 @@ class DataFile(param.Parameterized):
 # Define Type Hints.
 # ----------------------------------------------------------------------------
 
-ElementalTypes = Union[Factor, SpeciesFactor, Comment, DataFile]
+# ElementalTypes = Union[Factor, SpeciesFactor, Comment, DataFile]
 
 
 # ----------------------------------------------------------------------------

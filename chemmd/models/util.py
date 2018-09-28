@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------------
 
 # Generic Python imports.
+import itertools
 from typing import Any, List
 
 
@@ -20,7 +21,6 @@ def ensure_list(val_or_values: Any) -> List:
         return []
     else:
         return [val_or_values]
-
 
 
 def get_all_elements(node,
@@ -67,5 +67,3 @@ def get_all_elements(node,
             element_list.extend(itertools.chain.from_iterable(children_elements))
 
     return element_list
-
-    

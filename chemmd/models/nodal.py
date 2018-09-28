@@ -20,7 +20,7 @@ from typing import Union, List
 from . import util
 
 
-class DrupalNode(param.Parameterized):
+class Node(param.Parameterized):
     """Model for a single Drupal content node.
 
     Much of this class is declarative, with the Param package doing all of the
@@ -57,21 +57,21 @@ class DrupalNode(param.Parameterized):
     factors = param.List(
         allow_None=True,
         doc=dedent("""A list of Factor models that pertain to all 
-        assays contained by this DrupalNode instance.
+        assays contained by this Node instance.
         """)
     )
 
     samples = param.List(
         allow_None=True,
         doc=dedent("""A list of Sample models that are used by all assays 
-        contained by this DrupalNode instance.
+        contained by this Node instance.
         """)
     )
 
     comments = param.List(
         allow_None=True,
         doc=dedent(""" A list of Comment models that apply to all of the 
-        assays contained by this DrupalNode instance.
+        assays contained by this Node instance.
         """)
     )
 
@@ -162,7 +162,7 @@ class AssayNode(param.Parameterized):
 
     parental_factors = param.List(
         allow_None=True,
-        doc=dedent("""A list of Factor objects from the parent DrupalNode
+        doc=dedent("""A list of Factor objects from the parent Node
         of this assay.
         
         All of these factors apply to this assay.
@@ -171,7 +171,7 @@ class AssayNode(param.Parameterized):
 
     parental_samples = param.List(
         allow_None=True,
-        doc=dedent("""A list of Sample objects from the parent DrupalNode 
+        doc=dedent("""A list of Sample objects from the parent Node 
         of this assay.
         
         All of these Samples are used by this assay.
@@ -180,14 +180,14 @@ class AssayNode(param.Parameterized):
 
     parental_info = param.Dict(
         allow_None=True,
-        doc=dedent("""The metadata information of the parent DrupalNode
+        doc=dedent("""The metadata information of the parent Node
         of this assay.
         """)
     )
 
     parental_comments = param.List(
         allow_None=True,
-        doc=dedent("""A list of comments from the parent DrupalNode 
+        doc=dedent("""A list of comments from the parent Node 
         of this assay.
         """)
     )
@@ -381,4 +381,4 @@ class SourceNode(param.Parameterized):
 # Define Type Hints.
 # ----------------------------------------------------------------------------
 
-NodeTypes = Union[DrupalNode, SampleNode, AssayNode, SourceNode]
+NodeTypes = Union[Node, SampleNode, AssayNode, SourceNode]

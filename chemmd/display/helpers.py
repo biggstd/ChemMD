@@ -37,7 +37,7 @@ import markdown
 from ... import config
 from .. import io
 from ..models.core import DerivedGroupType, GroupTypes, QueryGroupType
-from ..models.nodal import DrupalNode
+from ..models.nodal import Node
 
 # ----------------------------------------------------------------------------
 # Globals and constants
@@ -100,8 +100,8 @@ def load_session_data(x_groups: QueryGroupType,
     # Find the paths based on the session context.
     json_paths = get_session_json_paths(current_document)
 
-    # Build DrupalNode models from each of the found json files.
-    nodes = io.create_drupal_nodes(json_paths)
+    # Build Node models from each of the found json files.
+    nodes = io.create_nodes_from_files(json_paths)
 
     # Combine these nodes into a single set of data and metadata
     # based on the user-supplied query groups.
