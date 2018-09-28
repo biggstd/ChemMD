@@ -7,10 +7,12 @@ for analysis and visualization.*
 **To do:**
 
 + [ ] Complete `ChemMD` repository setup.
-    + [ ] Apply new structure to Bokeh applications.
-+ [ ] Complete query group setup.
-    *These should be Drupal content types that the user selects.*
+    + [x] Apply new structure to Bokeh applications.
++ [ ] Complete query group setup on Drupal.
+    *These should be content types that the user selects.*
 + [ ] Complete tests setup for `ChemMD`.
++ [x] Add download button to table views.
+    + [ ] Convert download to generic, only works in one case now.
 + [ ] Travis CI integration.
 + [ ] DockerHub integration.
 + [ ] Better code integration.
@@ -76,13 +78,13 @@ pip install .
 #TODO: Implement me.
 ```
 
-*Open a bash shell within the container:*
+*To open a bash shell within the container:*
 
 ```bash
 docker exec -it ChemMD bash
 ```
 
-*Stop and delete the container:*
+*To stop and delete the container:*
 
 ```bash
 docker stop ChemMD && docker rm ChemMD

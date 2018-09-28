@@ -3,12 +3,16 @@
 """
 
 # ----------------------------------------------------------------------------
+# Generic Imports
+# ----------------------------------------------------------------------------
+import pkg_resources
+
+# ----------------------------------------------------------------------------
 # Bokeh imports
 # ----------------------------------------------------------------------------
 import bokeh as bk
 import bokeh.io
 import bokeh.models
-import bokeh.layouts
 
 # ----------------------------------------------------------------------------
 # ChemMD imports
@@ -28,11 +32,12 @@ NMR_GROUPS = dict(
     y_groups=(('27 Al ppm', ('ppm',), ("Al",)),)
 )
 
-nmr_json_paths = [demos["SIPOS_NMR"], demos["SIPOS_NMR_V2"]]
+# Load the demo data from ChemMD.
+nmr_json_paths = [demos["SIPOS_NMR"], demos["SIPOS_NMR_2"]]
 
 nmr_nodes = io.create_nodes_from_files(nmr_json_paths)
 
-nmr_data = io.prepare_nodes_for_bokeh(
+main_df, metadata_df, metadata_dict = io.prepare_nodes_for_bokeh(
     NMR_GROUPS["x_groups"],
     NMR_GROUPS["y_groups"],
     nmr_nodes)
@@ -44,7 +49,9 @@ nmr_data = io.prepare_nodes_for_bokeh(
 table = table_layout(
     NMR_GROUPS["x_groups"],
     NMR_GROUPS["y_groups"],
-    *nmr_nodes)
+    main_df,
+    metadata_df,
+    metadata_dict)
 
 table_panel = bk.models.Panel(child=table, title="Data Table")
 

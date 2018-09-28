@@ -39,7 +39,7 @@
     "node_assays": [
       {
         "assay_title": "Potassium Hydroxide Assay",
-        "assay_datafile": "sipos_2006_talanta_fig_3_KOH.csv",
+        "assay_datafile": "sipos_2006_fig3_KOH.csv",
         "assay_samples": [
           {
             "sample_name": "Potassium Hydroxide",
@@ -112,7 +112,7 @@
       },
       {
         "assay_title": "Lithium Hydroxide Assay",
-        "assay_datafile": "sipos_2006_talanta_fig_3_LiOH.csv",
+        "assay_datafile": "sipos_2006_fig3_LiOH.csv",
         "assay_samples": [
           {
             "sample_name": "Lithium Hydroxide",
@@ -179,7 +179,7 @@
       },
       {
         "assay_title": "Sodium Hydroxide Assay",
-        "assay_datafile": "sipos_2006_talanta_fig_3_NaOH.csv",
+        "assay_datafile": "sipos_2006_fig3_NaOH.csv",
         "assay_samples": [
           {
             "sample_name": "Sodium Hydroxide",
@@ -246,7 +246,7 @@
       },
       {
         "assay_title": "Sodium Hydroxide v Aluminate Assay",
-        "assay_datafile": "sipos_2006_talanta_fig_2.csv",
+        "assay_datafile": "sipos_2006_fig2.csv",
         "assay_samples": [
           {
             "sample_name": "Sodium Hydroxide",

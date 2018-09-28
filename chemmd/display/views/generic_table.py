@@ -71,7 +71,7 @@ def table_layout(x_groups: GroupTypes,
 
     # Load the custom java script.
     js_code_path = pkg_resources.resource_filename(
-        __name__, "display/custom_js/download.js")
+        __name__, "custom_js/download.js")
     with open(js_code_path, 'r') as file:
         js_code = file.read()
 

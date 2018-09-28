@@ -90,7 +90,7 @@
     "node_assays": [
         {
             "assay_title": "Al 27 NMR of Sodium Aluminate",
-            "assay_datafile": "sipos_2006_talanta_fig_2.csv"
+            "assay_datafile": "sipos_2006_fig2.csv"
         }
     ],
     "node_comments": [

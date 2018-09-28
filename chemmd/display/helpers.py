@@ -34,7 +34,7 @@ import pandas as pd
 import markdown
 
 # Local project imports.
-from ... import config
+from .. import config
 from .. import io
 from ..models.core import DerivedGroupType, GroupTypes, QueryGroupType
 from ..models.nodal import Node

@@ -91,8 +91,8 @@ def prepare_nodes_for_bokeh(x_groups: QueryGroupType,
     # these columns and return two different data frames.
     # TODO: Re-examine this code. Should I need to swap levels here?
     # Perhaps this arrangement should be set as the default.
-    main_df = main_df.swaplevel(0, 1, axis=1).xs("data", axis=1)
     metadata_df = main_df.swaplevel(0, 1, axis=1).xs("metadata", axis=1)
+    main_df = main_df.swaplevel(0, 1, axis=1).xs("data", axis=1)
 
     return main_df, metadata_df, metadata_dict
 

@@ -9,9 +9,8 @@
         "HTTP_QUERY_STRING": "JD"
     },
     "JSON_DEMOS": {
-        "SIPOS_NMR": "tests/demo_json/sipos_2006_fig2.json",
-        "SIPOS_NMR_2": "tests/demo_json/sipos_2006_fig3.json",
-        "ERNESTO_NMR_1": "tests/demo_json/ernesto_nmr_1.json",
-        "SIPOS_RAMAN": "tests/demo_json/sipos_2006_science_direct_raman.json"
+        "SIPOS_NMR": "tests/demo_json/sipos_2006_nmr_1.json",
+        "SIPOS_NMR_2": "tests/demo_json/sipos_2006_nmr_2.json",
+        "ERNESTO_NMR_1": "tests/demo_json/ernesto_nmr_1.json"
     }
 }
