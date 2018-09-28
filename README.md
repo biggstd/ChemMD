@@ -6,11 +6,12 @@ for analysis and visualization.*
 
 **To do:**
 
-+ Travis CI integration
-+ DockerHub integration
-+ Better code integration
-+ Sphinx documentation setup
-+ Add a license
++ [ ] Travis CI integration
++ [ ] DockerHub integration
++ [ ] Better code integration
++ [ ] Sphinx documentation setup
++ [ ] Add a license
++ [ ] `io.py` see contained todo items.
 
 Component Summaries
 -------------------
@@ -26,3 +27,31 @@ description.*
 + `scripts`: Scripts used for deploying applications within
     `bokeh_apps`.
 + `tests`: Tests for the contained programs.
+
+Installation Instructions
+-------------------------
+
+**Basic Installation:**
+
+```bash
+# Clone the repository.
+git clone git@github.com:biggstd/ChemMD.git
+# Change to the parent directory and run the installer with pip.
+cd ChemMD
+pip install .
+```
+
+**Run in Docker:**
+
+*To build the image locally:*
+
+```bash
+# Not yet implemented.
+# docker build -t chemmd .
+```
+
+*To run the container from Docker Hub:*
+
+```bash
+
+```
