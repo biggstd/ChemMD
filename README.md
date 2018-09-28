@@ -6,27 +6,42 @@ for analysis and visualization.*
 
 **To do:**
 
-+ [ ] Travis CI integration
-+ [ ] DockerHub integration
-+ [ ] Better code integration
-+ [ ] Sphinx documentation setup
-+ [ ] Add a license
++ [ ] Complete `ChemMD` repository setup.
++ [ ] Complete tests setup for `ChemMD`.
++ [ ] Travis CI integration.
++ [ ] DockerHub integration.
++ [ ] Better code integration.
++ [ ] Sphinx documentation setup.
++ [ ] Add a license.
 + [ ] `io.py` see contained todo items.
 
-Component Summaries
+Folder Descriptions
 -------------------
 
 *See the README files in each directory for a more detailed
 description.*
 
-+ `bokeh_apps`: [Bokeh](https://github.com/bokeh/bokeh) web
++ `bokeh_apps` [Bokeh](https://github.com/bokeh/bokeh) web
     applications which display data / metadata sets provided
     by `ChemMD`.
-+ `chemmd`: The Python package which provides the data
++ `chemmd` The Python package which provides the data
     for the `bokeh` applications in `bokeh_apps`.
-+ `scripts`: Scripts used for deploying applications within
++ `scripts` Scripts used for deploying applications within
     `bokeh_apps`.
-+ `tests`: Tests for the contained programs.
++ `tests` Tests for the contained programs.
+
+File Descriptions
+-----------------
+
+*Files in this top-level directory.*
+
++ `.gitignore`
++ `Dockerfile`
++ `LICENSE.txt`
++ `README.md` This readme file.
++ `requirements.txt`
++ `setup.py`
+
 
 Installation Instructions
 -------------------------
