@@ -32,13 +32,11 @@ ENV BOKEH_RESOURCES=inline
 # for the declaration of these options.
 ENV DREAM_CONFIG=DEFAULT
 
-# TODO: Set up the directories for each Bokeh application.
-#COPY ./bokehtest /bokehtest
-#COPY ./NMRDemo /NMRDemo
-#COPY ./testvis /testvis
+# Copy the Bokeh applications to the container.
+COPY ./bokeh_applications/scatter /opt/bkapps/scatter
+COPY ./bokeh_applications/table /opt/bkapps/table
 
 # Add entrypoint (this allows variable expansion).
-# TODO: Add Bokeh application directories to entrypoint.sh.
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
