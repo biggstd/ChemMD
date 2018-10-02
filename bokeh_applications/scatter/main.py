@@ -1,4 +1,4 @@
-"""An application that serves only a Table.
+"""An application that serves a table and a scatter plot.
 
 """
 
@@ -15,6 +15,8 @@ import bokeh.models
 from chemmd import io
 from chemmd.display import helpers
 from chemmd.display.views.generic_table import table_layout
+from chemmd.display.views.generic_cross_filter_scatter import scatter_layout
+
 
 # ----------------------------------------------------------------------------
 # Read the HTML session.
@@ -41,18 +43,34 @@ except Exception as error:
     # TODO: Placeholder / error values that make sense to an end user.
     print(error)
 
+
 # ----------------------------------------------------------------------------
 # Table creation
 # ----------------------------------------------------------------------------
-# Create the table.
 table = table_layout(
     groups["x_groups"],
     groups["y_groups"],
     main_df,
     metadata_df,
     metadata_dict)
-
 table_panel = bk.models.Panel(child=table, title="Data Table")
-tabs = bk.models.widgets.Tabs(tabs=[table_panel])
+
+
+# ----------------------------------------------------------------------------
+# Scatter plot creation
+# ----------------------------------------------------------------------------
+scatter = scatter_layout(
+    groups["x_groups"],
+    groups["y_groups"],
+    main_df,
+    metadata_df,
+    metadata_dict)
+scatter_panel = bk.models.Panel(child=table, title="Scatter")
+
+
+# ----------------------------------------------------------------------------
+# Tab creation
+# ----------------------------------------------------------------------------
+tabs = bk.models.widgets.Tabs(tabs=[table_panel, scatter_panel])
 # Add the created tabs to the current document.
 bk.io.curdoc().add_root(tabs)

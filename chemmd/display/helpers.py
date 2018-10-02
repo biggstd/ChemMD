@@ -11,13 +11,13 @@ by the ``io`` module.
 # ----------------------------------------------------------------------------
 
 # Standard library imports
-import collections
+# import collections
 import glob
+import json
 import itertools
 import logging
 import os
-# Type hinting imports.
-from typing import Callable, Dict, List, Tuple, Union
+from typing import Dict, List, Tuple, Union
 
 # Bokeh imports
 import bokeh as bk
@@ -25,19 +25,16 @@ import bokeh.document
 import bokeh.layouts
 import bokeh.models
 import bokeh.palettes
-import bokeh.plotting
-import bokeh.transform
+
 # External imports
 import numpy as np
 import pandas as pd
-
 import markdown
 
 # Local project imports.
 from .. import config
 from .. import io
 from ..models.core import DerivedGroupType, GroupTypes, QueryGroupType
-from ..models.nodal import Node
 
 # ----------------------------------------------------------------------------
 # Globals and constants
@@ -49,11 +46,12 @@ logger = logging.getLogger(__name__)
 # Get the environment variable to find the base path for data files
 # described in the loaded metadata.
 HTTP_QUERY_STRING = config["HTTP_QUERY_STRING"]
+GROUP_QUERY = config["GROUP_QUERY"]
 PALETTE = bk.palettes.Category10  # pylint: disable=maybe-no-member
 
 
 # ----------------------------------------------------------------------------
-# Drupal Session API
+# HTML Session API
 # ----------------------------------------------------------------------------
 
 def get_session_json_paths(current_document: bk.document.Document,
@@ -64,7 +62,7 @@ def get_session_json_paths(current_document: bk.document.Document,
     its .json metadata files.
 
     :param current_document: A bokeh Document instance. Usually provided by
-        a call to `bk.plotting.curdoc()`.
+        a call to `bk.io.curdoc()`.
     :param base_path: The base directory for reading json datafiles.
 
     :returns: A list of json file paths.
@@ -76,6 +74,7 @@ def get_session_json_paths(current_document: bk.document.Document,
     logger.info(f"Document HTTP context arguments: {arguments}")
 
     # Get the list of arguments (there should be only one).
+    # TODO: Describe HTTP_QUERY_STRING better.
     file_path = arguments.get(HTTP_QUERY_STRING)[0].decode("utf-8")
 
     # The data should always be found in the "data" sub-directory.
@@ -87,10 +86,32 @@ def get_session_json_paths(current_document: bk.document.Document,
             glob.glob(f"{file_path}/*.json")]
 
 
+def get_session_groups(current_document: bk.document.Document,
+                       base_path: str = config["BASE_PATH"]) -> dict:
+    """
+
+    :param current_document:
+    :param base_path:
+    :return:
+    """
+    arguments = current_document.session_context.request.arguments
+    group_path = arguments.get(GROUP_QUERY)[0].decode("utf-8")
+    # The data should always be found in the "data" sub-directory.
+    # It is placed there by the Drupal server.
+    group_file = os.path.join(base_path, group_path)
+
+    with open(group_file, "r") as file:
+        data = json.load(file)
+
+    return data
+
+
 def load_session_data(x_groups: QueryGroupType,
                       y_groups: QueryGroupType,
                       current_document: bk.document.Document
-                      ) -> Tuple[bk.models.ColumnDataSource, dict]:
+                      ) -> Tuple[bk.models.ColumnDataSource,
+                                 pd.DataFrame,
+                                 dict]:
     """Load data for a document instance based on the provided query groups.
 
     :returns:

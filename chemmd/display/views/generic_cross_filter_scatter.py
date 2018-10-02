@@ -14,16 +14,13 @@ from typing import ChainMap, Dict, List, Tuple, Union
 import bokeh as bk
 import bokeh.layouts
 import bokeh.models
-import bokeh.palettes
 import bokeh.plotting
-import numpy as np
 import pandas as pd
 
 # ----------------------------------------------------------------------------
 # ISADream imports
 # ----------------------------------------------------------------------------
 from .. import helpers
-from ... import io
 from ...models.core import GroupTypes
 
 # ----------------------------------------------------------------------------
@@ -31,11 +28,11 @@ from ...models.core import GroupTypes
 # ----------------------------------------------------------------------------
 TITLE = "Scatter Plot"
 
-# ----------------------------------------------------------------------------
-# Bokeh Panel Definition
-# ----------------------------------------------------------------------------
 
-def scatter_panel(x_groups: GroupTypes,
+# ----------------------------------------------------------------------------
+# Bokeh Layout Definition
+# ----------------------------------------------------------------------------
+def scatter_layout(x_groups: GroupTypes,
                   y_groups: GroupTypes,
                   main_df: pd.DataFrame,
                   metadata_df: pd.DataFrame,
@@ -45,9 +42,9 @@ def scatter_panel(x_groups: GroupTypes,
     :param x_groups:
     :param y_groups:
     :param main_df:
+    :param metadata_df:
     :param metadata:
     :return:
-
     """
     # ------------------------------------------------------------------------
     # Create the interactive bokeh column data source.
@@ -63,9 +60,11 @@ def scatter_panel(x_groups: GroupTypes,
             if new['1d']['indices'] else None
 
         # Create the metadata column layout element.
-        column = helpers.create_metadata_column(metadata_df, metadata, selected_indexes)
+        column = helpers.create_metadata_column(
+            metadata_df, metadata, selected_indexes)
         # Get the parent layout element and update its children.
-        curr_layout = bk.plotting.curdoc().get_model_by_name('metadata_column')
+        curr_layout = bk.plotting.curdoc().get_model_by_name(
+            'metadata_column')
         curr_layout.children[0] = column
 
     # Add the point selection callback to the bokeh source object.
@@ -95,7 +94,10 @@ def scatter_panel(x_groups: GroupTypes,
     # Define the primary figure.
     # ------------------------------------------------------------------------
     def build_figure() -> bk.plotting.Figure:
+        """
 
+        :return:
+        """
         # Create the basic figure object.
         figure = bk.plotting.Figure(name="scatter_panel_figure",
                                     x_axis_type=controls["x_axis_type"].value,
@@ -119,7 +121,8 @@ def scatter_panel(x_groups: GroupTypes,
         # TODO: Fix the resizing bug associated with this.
         if controls["color"].value != "None":
             legend_item = bk.models.LegendItem(
-                label=dict(field=controls["color"].value), renderers=[circles])
+                label=dict(field=controls["color"].value),
+                renderers=[circles])
             legend = bk.models.Legend(items=[legend_item])
             figure.add_layout(legend, "below")
             figure.legend.orientation = "horizontal"
@@ -144,7 +147,7 @@ def scatter_panel(x_groups: GroupTypes,
             bk.layouts.column(name="main_figure",
                               children=[build_figure()]),
             bk.layouts.column(name="metadata_column",
-                              children=[helpers.create_metadata_column(source, metadata)])
+                              children=[helpers.create_metadata_column(
+                                  source, metadata)])
         ]])
-    panel = bk.models.Panel(child=layout, title=TITLE)
-    return panel
+    return layout

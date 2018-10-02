@@ -35,7 +35,7 @@ TITLE = "Data Table"
 
 
 # ----------------------------------------------------------------------------
-# Bokeh Panel Definition
+# Bokeh Layout Definition
 # ----------------------------------------------------------------------------
 def table_layout(x_groups: GroupTypes,
                  y_groups: GroupTypes,
