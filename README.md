@@ -8,6 +8,10 @@ for analysis and visualization.*
 
 + [ ] Complete `ChemMD` repository setup.
     + [x] Apply new structure to Bokeh applications.
+    + [x] Generic Scatter with a data table application.
+    + [x] Data table application.
+    + [ ] Describe commands in `entrypoint.sh`.
+    + [ ] Repair `io` functions.
 + [ ] Complete query group setup on Drupal.
     *These should be content types that the user selects.*
 + [ ] Complete tests setup for `ChemMD`.
@@ -18,7 +22,6 @@ for analysis and visualization.*
 + [ ] Better code integration.
 + [ ] Sphinx documentation setup.
 + [ ] Add a license.
-+ [ ] `io.py` see contained todo items.
 
 Folder Descriptions
 -------------------
