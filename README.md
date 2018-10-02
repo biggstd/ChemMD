@@ -80,7 +80,9 @@ pip install .
 *To run the container from Docker Hub:*
 
 ```bash
-#TODO: Implement me.
+docker run -p 0.0.0.1:8001:5006\
+  -v /data/dir/on/host:/opt/isadream/data \
+  -t -d --name chemmd tylerbiggs/chemmd:VERSION
 ```
 
 *To open a bash shell within the container:*
