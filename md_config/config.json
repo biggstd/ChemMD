@@ -6,8 +6,7 @@
   },
   "TESTING": {
     "BASE_PATH": "tests/demo_data",
-    "LOG_LEVEL": "DEBUG",
-    "HTTP_QUERY_STRING": "JQ"
+    "LOG_LEVEL": "DEBUG"
   },
   "JSON_DEMOS": {
     "SIPOS_NMR": "tests/demo_json/sipos_2006_nmr_1.json",

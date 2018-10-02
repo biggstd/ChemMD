@@ -18,7 +18,6 @@ with the use of ``query groups``.
 
 import collections
 import csv
-# import itertools
 import json
 import logging
 import os

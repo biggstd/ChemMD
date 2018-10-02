@@ -210,13 +210,6 @@ class DataFile(param.Parameterized):
 
 
 # ----------------------------------------------------------------------------
-# Define Type Hints.
-# ----------------------------------------------------------------------------
-
-# ElementalTypes = Union[Factor, SpeciesFactor, Comment, DataFile]
-
-
-# ----------------------------------------------------------------------------
 # Define Query Groups Types
 # 
 # These are implemented as generics so that these classes need not be

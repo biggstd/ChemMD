@@ -6,20 +6,21 @@ for analysis and visualization.*
 
 **To do:**
 
++ [ ] Complete query group setup on Drupal.
+    *These should be content types that the user selects.*
++ [ ] Fix UI on experiment creation on Drupal.
++ [ ] DockerHub integration.
++ [ ] Travis CI integration.
 + [ ] Complete `ChemMD` repository setup.
     + [x] Apply new structure to Bokeh applications.
     + [x] Generic Scatter with a data table application.
     + [x] Data table application.
     + [ ] Describe commands in `entrypoint.sh`.
-    + [ ] Repair `io` functions.
-+ [ ] Complete query group setup on Drupal.
-    *These should be content types that the user selects.*
-+ [ ] Complete tests setup for `ChemMD`.
 + [x] Add download button to table views.
     + [ ] Convert download to generic, only works in one case now.
-+ [ ] Travis CI integration.
-+ [ ] DockerHub integration.
 + [ ] Better code integration.
++ [ ] Complete tests setup for `ChemMD`.
++ [ ] Repair `io` functions.
 + [ ] Sphinx documentation setup.
 + [ ] Add a license.
 
@@ -44,6 +45,7 @@ File Descriptions
 *Files in this top-level directory.*
 
 + `.gitignore` Files and folders to be ignored by Git.
++ `.travis.yml` A travis.ci workflow file.
 + `Dockerfile` A file which defines the Docker image with
    ChemMD and associated visualizations. The image launches
    a Bokeh server by default. 
