@@ -5,14 +5,13 @@
 # ----------------------------------------------------------------------------
 # General Imports
 # ----------------------------------------------------------------------------
-import os
 import pytest
 
 # ----------------------------------------------------------------------------
 # Imports for Testing
 # ----------------------------------------------------------------------------
 
-from chemmd import config, demos
+from chemmd import demos
 
 from chemmd import io
 from chemmd.models.core import Factor, SpeciesFactor, Comment
@@ -23,7 +22,6 @@ from chemmd.models.nodal import SourceNode, SampleNode, AssayNode, Node
 # ----------------------------------------------------------------------------
 # Json demo files.
 SIPOS = demos["SIPOS_NMR"]
-RAMAN = demos["SIPOS_RAMAN"]
 
 
 # ----------------------------------------------------------------------------
@@ -168,9 +166,9 @@ def ernesto_nmr():
     return demos["ERNESTO_NMR_1"]
 
 
-@pytest.fixture
-def sipos_raman():
-    return demos["SIPOS_RAMAN"]
+# @pytest.fixture
+# def sipos_raman():
+#     return demos["SIPOS_RAMAN"]
 
 
 # ----------------------------------------------------------------------------
