@@ -28,18 +28,22 @@ RUN python setup.py install
 # CDN server for bokeh resources does not work.
 # ENV BOKEH_RESOURCES=inline
 
+# Copy the configuration folder.
+COPY ./md_config/ /md_config/
+
 # Setup isadream data environment variable.
 # See the `config.json` file in the `md_config` directory
 # for the declaration of these options.
-ENV DREAM_CONFIG=DEFAULT
+ENV CHEMMD_CONFIG=DEFAULT
+ENV CHEMMD_CONFIG_PATH="/md_config/config.json"
 
 # Copy the Bokeh applications to the container.
 COPY ./bokeh_applications/scatter /opt/bkapps/scatter
 COPY ./bokeh_applications/table /opt/bkapps/table
 
 # Change the permissions of the bash files in the scripts folder.
-RUN chmod +x opt/ChemMD/scripts/*.sh
+RUN chmod +x /opt/ChemMD/scripts/*.sh
 
 # Declare the entrypoint. This is the script that will be run
 # by default when the Docker container launches.
-ENTRYPOINT ["opt/ChemMD/scripts/entrypoint.sh"]
+ENTRYPOINT ["/opt/ChemMD/scripts/entrypoint.sh"]

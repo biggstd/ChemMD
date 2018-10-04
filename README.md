@@ -4,13 +4,16 @@ ChemMD
 *ChemMD is a wrapper for interpreting data and metadata `.json` files
 for analysis and visualization.*
 
+[![BCH compliance](https://bettercodehub.com/edge/badge/biggstd/ChemMD?branch=master)](https://bettercodehub.com/)
+[![Build Status](https://travis-ci.org/biggstd/ChemMD.svg?branch=master)](https://travis-ci.org/biggstd/ChemMD)
+
 **To do:**
 
 + [ ] Complete query group setup on Drupal.
     *These should be content types that the user selects.*
 + [ ] Fix UI on experiment creation on Drupal.
-+ [ ] DockerHub integration.
-+ [ ] Travis CI integration.
++ [x] DockerHub integration.
++ [x] Travis CI integration.
 + [x] Complete `ChemMD` repository setup.
     + [x] Apply new structure to Bokeh applications.
     + [x] Generic Scatter with a data table application.
@@ -18,7 +21,7 @@ for analysis and visualization.*
     + [x] Describe commands in `entrypoint.sh`.
 + [x] Add download button to table views.
     + [ ] Convert download to generic, only works in one case now.
-+ [ ] Better code integration.
++ [x] Better code integration.
 + [ ] Complete tests setup for `ChemMD`.
 + [ ] Repair `io` functions.
 + [ ] Sphinx documentation setup.
