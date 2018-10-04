@@ -11,11 +11,11 @@ for analysis and visualization.*
 + [ ] Fix UI on experiment creation on Drupal.
 + [ ] DockerHub integration.
 + [ ] Travis CI integration.
-+ [ ] Complete `ChemMD` repository setup.
++ [x] Complete `ChemMD` repository setup.
     + [x] Apply new structure to Bokeh applications.
     + [x] Generic Scatter with a data table application.
     + [x] Data table application.
-    + [ ] Describe commands in `entrypoint.sh`.
+    + [x] Describe commands in `entrypoint.sh`.
 + [x] Add download button to table views.
     + [ ] Convert download to generic, only works in one case now.
 + [ ] Better code integration.

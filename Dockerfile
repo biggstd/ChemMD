@@ -24,8 +24,9 @@ COPY . /opt/ChemMD/
 WORKDIR /opt/ChemMD/
 RUN python setup.py install
 
-# Setup bokeh environment variables.
-ENV BOKEH_RESOURCES=inline
+# Setup bokeh environment variables. This should be used if access to the
+# CDN server for bokeh resources does not work.
+# ENV BOKEH_RESOURCES=inline
 
 # Setup isadream data environment variable.
 # See the `config.json` file in the `md_config` directory
@@ -36,10 +37,9 @@ ENV DREAM_CONFIG=DEFAULT
 COPY ./bokeh_applications/scatter /opt/bkapps/scatter
 COPY ./bokeh_applications/table /opt/bkapps/table
 
-# Add entrypoint (this allows variable expansion).
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+# Change the permissions of the bash files in the scripts folder.
+RUN chmod +x opt/ChemMD/scripts/*.sh
 
 # Declare the entrypoint. This is the script that will be run
 # by default when the Docker container launches.
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["opt/ChemMD/scripts/entrypoint.sh"]
