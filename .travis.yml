@@ -11,5 +11,6 @@ services:
 
 script:
     - docker build -t tylerbiggs/chemmd:$TRAVIS_BUILD_NUMBER .
-    - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+#    - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
     - docker push tylerbiggs/chemmd:$TRAVIS_BUILD_NUMBER
