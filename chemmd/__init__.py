@@ -21,28 +21,18 @@ import logging
 # on the Docker image (production) as the default configuration file will
 # not be available.
 config_env = os.environ.get("CHEMMD_CONFIG", "TESTING")
+config_path = os.path.join("/md_config/config.json")
 
+with open(config_path, "r") as json_config:
+    config = json.load(json_config)
 
-if config_env == "TESTING":
+# demo_path = os.path.dirname(os.path.dirname(__file__))
 
-    config_path = os.path.join(os.path.dirname(__file__),
-                               "../md_config/config.json")
-
-    with open(config_path, "r") as json_config:
-        config = json.load(json_config)
-
-    demo_path = os.path.dirname(os.path.dirname(__file__))
-
-    demos = config['JSON_DEMOS']
-
-    config["TESTING"]["BASE_PATH"] = os.path.join(
-        demo_path, config["TESTING"]["BASE_PATH"])
-
-else:
-    config_path = os.path.join("/md_config/config.json")
-    with open(config_path, "r") as json_config:
-        config = json.load(json_config)
-
+demos = config['JSON_DEMOS']
 config = config[config_env]
+
+# config["TESTING"]["BASE_PATH"] = os.path.join(
+#     demo_path, config["TESTING"]["BASE_PATH"])
+
 
 logging.basicConfig(filename='ChemMD.log', level=config["LOG_LEVEL"])

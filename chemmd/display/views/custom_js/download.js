@@ -2,6 +2,7 @@
 // https://github.com/bokeh/bokeh/blob/master/examples/app/export_csv/download.js
 
 var data = source.data;
+console.log(source.data)
 var filetext = 'name,income,years_experience\n';
 for (var i = 0; i < data['name'].length; i++) {
     var currRow = [data['name'][i].toString(),

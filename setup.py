@@ -8,5 +8,6 @@ setup(
     packages=find_packages(),
     setup_requires=["pytest-runner"],
     tests_require=["pytest"],
+    package_data={"chemmd": ["display/views/custom_js/*.js"]},
     include_package_data=True
 )

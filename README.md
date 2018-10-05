@@ -22,7 +22,7 @@ for analysis and visualization.*
 + [x] Add download button to table views.
     + [ ] Convert download to generic, only works in one case now.
 + [x] Better code integration.
-+ [ ] Complete tests setup for `ChemMD`.
++ [x] Complete tests setup for `ChemMD`.
 + [ ] Repair `io` functions.
 + [ ] Sphinx documentation setup.
 + [ ] Add a license.
@@ -84,6 +84,7 @@ pip install .
 
 ```bash
 docker run -p 0.0.0.1:8001:5006\
+  -e "CHEMMD_CONFIG=DEFAULT"\
   -v /data/dir/on/host:/opt/isadream/data \
   -t -d --name chemmd tylerbiggs/chemmd:VERSION
 ```
@@ -98,4 +99,15 @@ docker exec -it ChemMD bash
 
 ```bash
 docker stop ChemMD && docker rm ChemMD
+```
+
+Testing
+-------
+
+**Testing on Docker**
+
+```bash
+docker run -p 0.0.0.1:8001:5006\
+  -e "CHEMMD_CONFIG=TESTING"\
+  -t -d --name chemmd tylerbiggs/chemmd:VERSION
 ```

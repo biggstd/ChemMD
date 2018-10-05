@@ -46,7 +46,7 @@ logger = logging.getLogger(__name__)
 # Get the environment variable to find the base path for data files
 # described in the loaded metadata.
 HTTP_QUERY_STRING = config["HTTP_QUERY_STRING"]
-GROUP_QUERY = config["GROUP_QUERY"]
+GROUP_QUERY = config["HTTP_GROUP_QUERY"]
 PALETTE = bk.palettes.Category10  # pylint: disable=maybe-no-member
 
 

@@ -71,7 +71,10 @@ def table_layout(x_groups: GroupTypes,
 
     # Load the custom java script.
     js_code_path = pkg_resources.resource_filename(
-        __name__, "custom_js/download.js")
+        "chemmd", "display/views/custom_js/download.js")
+
+    print(js_code_path)
+
     with open(js_code_path, 'r') as file:
         js_code = file.read()
 
