@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------------
 
 from chemmd.models.core import Factor, SpeciesFactor, Comment
-from chemmd.models.nodal import Node, SampleNode, SourceNode, AssayNode
+from chemmd.models.nodal import Node, Sample, Source, Experiment
 
 
 # ----------------------------------------------------------------------------
@@ -40,21 +40,19 @@ def test_comment_creation(comment_kwargs):
 # ----------------------------------------------------------------------------
 # Test nodal model initialization.
 # ----------------------------------------------------------------------------
-
-
 def test_source_node_creation(source_node_fixtures):
     for source_node in source_node_fixtures:
-        assert isinstance(source_node, SourceNode)
+        assert isinstance(source_node, Source)
 
 
 def test_sample_node_creation(sample_node_fixtures):
     for sample_node in sample_node_fixtures:
-        assert isinstance(sample_node, SampleNode)
+        assert isinstance(sample_node, Sample)
 
 
-def test_assay_node_creation(assay_node_fixtures):
-    for assay_node in assay_node_fixtures:
-        assert isinstance(assay_node, AssayNode)
+def test_assay_node_creation(experiment_node_fixtures):
+    for experiment in experiment_node_fixtures:
+        assert isinstance(experiment, Experiment)
 
 
 def test_drupal_node_creation(drupal_node_fixture_a):

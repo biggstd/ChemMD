@@ -15,7 +15,7 @@ from chemmd import demos
 
 from chemmd import io
 from chemmd.models.core import Factor, SpeciesFactor, Comment
-from chemmd.models.nodal import SourceNode, SampleNode, AssayNode, Node
+from chemmd.models.nodal import Source, Sample, Experiment, Node
 
 # ----------------------------------------------------------------------------
 # Globals and constants
@@ -101,41 +101,40 @@ def comment_factor_fixtures(comment_kwargs):
 # Nodal Model Fixtures
 # ----------------------------------------------------------------------------
 
-
 @pytest.fixture
 def source_node_fixtures(factor_fixtures, species_factor_fixtures,
                          comment_factor_fixtures):
-    return [SourceNode(**dict(source_name="Test Source",
-                              species=species_factor_fixtures,
-                              factors=factor_fixtures,
-                              comments=comment_factor_fixtures))]
+    return [Source(**dict(name="Test Source",
+                          species=species_factor_fixtures,
+                          factors=factor_fixtures,
+                          comments=comment_factor_fixtures))]
 
 
 @pytest.fixture
 def sample_node_fixtures(factor_fixtures, species_factor_fixtures,
                          comment_factor_fixtures, source_node_fixtures):
-    return [SampleNode(**dict(source_name="Test Sample",
-                              species=species_factor_fixtures,
+    return [Sample(**dict(name="Test Sample",
+                          species=species_factor_fixtures,
+                          factors=factor_fixtures,
+                          sources=source_node_fixtures,
+                          comments=comment_factor_fixtures))]
+
+
+@pytest.fixture
+def experiment_node_fixtures(factor_fixtures, sample_node_fixtures,
+                             comment_factor_fixtures):
+    return [Experiment(**dict(datafile="some_datafile.csv",
+                              name="Some assay title.",
                               factors=factor_fixtures,
-                              sources=source_node_fixtures,
+                              samples=sample_node_fixtures,
                               comments=comment_factor_fixtures))]
 
 
 @pytest.fixture
-def assay_node_fixtures(factor_fixtures, sample_node_fixtures,
-                        comment_factor_fixtures):
-    return [AssayNode(**dict(assay_datafile="some_datafile.csv",
-                             assay_title="Some assay title.",
-                             factors=factor_fixtures,
-                             samples=sample_node_fixtures,
-                             comments=comment_factor_fixtures))]
-
-
-@pytest.fixture
-def drupal_node_fixture_a(assay_node_fixtures, factor_fixtures,
+def drupal_node_fixture_a(experiment_node_fixtures, factor_fixtures,
                           sample_node_fixtures, comment_factor_fixtures):
-    return Node(**dict(title="Drupal Node A",
-                       assays=assay_node_fixtures,
+    return Node(**dict(name="Drupal Node A",
+                       experiments=experiment_node_fixtures,
                        factors=factor_fixtures,
                        samples=sample_node_fixtures,
                        comments=comment_factor_fixtures))
@@ -149,7 +148,6 @@ def sipos_drupal_node(sipos_nmr_json):
 # ----------------------------------------------------------------------------
 # JSON Data Fixtures
 # ----------------------------------------------------------------------------
-
 
 @pytest.fixture
 def sipos_nmr_json():
@@ -174,7 +172,6 @@ def ernesto_nmr():
 # ----------------------------------------------------------------------------
 # QueryGroup Fixtures
 # ----------------------------------------------------------------------------
-
 
 @pytest.fixture
 def nmr_groups():

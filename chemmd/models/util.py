@@ -25,7 +25,7 @@ def ensure_list(val_or_values: Any) -> List:
 
 def get_all_elements(node,
                      elemental_cls: str,
-                     children=('assays', 'samples', 'sources')) -> List:
+                     children=('experiments', 'samples', 'sources')) -> List:
     """
 
     :param node:

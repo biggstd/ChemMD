@@ -26,6 +26,7 @@ for analysis and visualization.*
 + [ ] Repair `io` functions.
 + [ ] Sphinx documentation setup.
 + [ ] Add a license.
++ [ ] Bettercode recommendations and re-factors..
 
 Folder Descriptions
 -------------------

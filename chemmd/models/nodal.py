@@ -47,7 +47,7 @@ class Node(param.Parameterized):
         """)
     )
 
-    assays = param.List(
+    experiments = param.List(
         allow_None=True,
         doc=dedent("""A list of Assay models that contain all core 
         data components.
@@ -92,9 +92,9 @@ class Node(param.Parameterized):
             ---
             """)
 
-        if self.assays:
+        if self.experiments:
             text += dedent("""## Assays\n""")
-            for assay in self.assays:
+            for assay in self.experiments:
                 text += assay.as_markdown
 
         if self.samples:
@@ -115,7 +115,7 @@ class Node(param.Parameterized):
         return text
 
 
-class AssayNode(param.Parameterized):
+class Experiment(param.Parameterized):
     """Model for single assay / experiment - contains a datafile and all
     metadata pertaining to that file.
 
@@ -125,7 +125,7 @@ class AssayNode(param.Parameterized):
 
     """
 
-    assay_datafile = param.String(
+    datafile = param.String(
         allow_None=True,  # There could be a single point uploaded.
         doc=dedent("""The filename of the data file which this assay 
         instance models.
@@ -135,7 +135,7 @@ class AssayNode(param.Parameterized):
         """)
     )
 
-    assay_title = param.String(
+    name = param.String(
         allow_None=False,
         doc=dedent("""The user-supplied title of this assay.
         """)
@@ -207,14 +207,14 @@ class AssayNode(param.Parameterized):
         return text
 
 
-class SampleNode(param.Parameterized):
+class Sample(param.Parameterized):
     """Model for a physical of simulated sample.
 
     A Sample object is a collection of species and factors.
 
     """
 
-    sample_name = param.String(
+    name = param.String(
         allow_None=False,
         doc=dedent("""The user supplied name of this sample.
         """)
@@ -313,7 +313,7 @@ class SampleNode(param.Parameterized):
         return text
 
 
-class SourceNode(param.Parameterized):
+class Source(param.Parameterized):
     """Model for a single Source.
 
     A source is similar to a sample.
@@ -321,7 +321,7 @@ class SourceNode(param.Parameterized):
     # TODO: Consider adding nested sources.
     """
 
-    source_name = param.String(
+    name = param.String(
         allow_None=False,
         doc=dedent("""User given name of this source.
         """)
@@ -381,4 +381,4 @@ class SourceNode(param.Parameterized):
 # Define Type Hints.
 # ----------------------------------------------------------------------------
 
-NodeTypes = Union[Node, SampleNode, AssayNode, SourceNode]
+NodeTypes = Union[Node, Sample, Experiment, Source]

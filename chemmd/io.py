@@ -29,11 +29,11 @@ import numpy as np
 
 from . import config
 
-# from .models import util
+from .models import util
 from .models.core import Comment, Factor, SpeciesFactor, DataFile
 from .models.core import QueryGroupType
-from .models.nodal import (AssayNode, Node, SampleNode,
-                           SourceNode, NodeTypes)
+from .models.nodal import (Experiment, Node, Sample,
+                           Source, NodeTypes)
 from .display.transforms import TRANSFORMS
 
 logger = logging.getLogger(__name__)
@@ -136,39 +136,39 @@ def build_nodal_model(json_dict: dict, model: NodeTypes,
     return []
 
 
-def parse_sources(json_dict: dict) -> SourceNode:
-    """Parse a source dictionary and create a SourceNode object.
+def parse_sources(json_dict: dict) -> Source:
+    """Parse a source dictionary and create a Source object.
     """
-    source_name = json_dict.get("source_name")
+    source_name = json_dict.get("name")
     factors = build_elemental_model(json_dict, Factor, "source_factors")
     species = build_elemental_model(json_dict, SpeciesFactor, "source_species")
     comments = build_elemental_model(json_dict, Comment, "source_comments")
-    return SourceNode(source_name=source_name, species=species, factors=factors,
-                      comments=comments)
+    return Source(name=source_name, species=species, factors=factors,
+                  comments=comments)
 
 
-def parse_samples(json_dict: dict) -> SampleNode:
-    """Parse a sample dictionary and create a SampleNode object.
+def parse_samples(json_dict: dict) -> Sample:
+    """Parse a sample dictionary and create a Sample object.
     """
     sample_name = json_dict.get("sample_name")
     factors = build_elemental_model(json_dict, Factor, "sample_factors")
     species = build_elemental_model(json_dict, SpeciesFactor, "sample_species")
     comments = build_elemental_model(json_dict, Comment, "sample_comments")
     sources = build_nodal_model(json_dict, parse_sources, "sample_sources")
-    return SampleNode(sample_name=sample_name, factors=factors, species=species,
-                      sources=sources, comments=comments)
+    return Sample(name=sample_name, factors=factors, species=species,
+                  sources=sources, comments=comments)
 
 
-def parse_assays(json_dict: dict) -> AssayNode:
-    """Parse an assay dictionary and create an AssayNode object.
+def parse_experiments(json_dict: dict) -> Experiment:
+    """Parse an assay dictionary and create an Experiment object.
     """
-    assay_title = json_dict.get("assay_title")
-    assay_datafile = json_dict.get("assay_datafile")
+    title = json_dict.get("assay_title")
+    datafile = json_dict.get("assay_datafile")
     comments = build_elemental_model(json_dict, Comment, "assay_comments")
     factors = build_elemental_model(json_dict, Factor, "assay_factors")
     samples = build_nodal_model(json_dict, parse_samples, "assay_samples")
-    return AssayNode(assay_title=assay_title, assay_datafile=assay_datafile,
-                     comments=comments, factors=factors, samples=samples)
+    return Experiment(name=title, datafile=datafile,
+                      comments=comments, factors=factors, samples=samples)
 
 
 def parse_node_json(json_dict: dict) -> Node:
@@ -180,7 +180,7 @@ def parse_node_json(json_dict: dict) -> Node:
     comments = build_elemental_model(json_dict, Comment, "node_comments")
     # Samples and assays have nested items, and require more processing.
     samples = build_nodal_model(json_dict, parse_samples, "node_samples")
-    assays = build_nodal_model(json_dict, parse_assays, "node_assays")
+    assays = build_nodal_model(json_dict, parse_experiments, "node_assays")
 
     for assay in assays:
         assay.parental_factors = factors
@@ -188,7 +188,7 @@ def parse_node_json(json_dict: dict) -> Node:
         assay.parental_info = node_information
         assay.parental_comments = comments
 
-    return Node(node_information=node_information, assays=assays,
+    return Node(node_information=node_information, experiments=assays,
                 factors=factors, samples=samples, comments=comments)
 
 
@@ -247,8 +247,8 @@ def filter_matching_factors(factors: List[Factor],
             or g_unit_filter == ("Species",)]
 
 
-def filter_matching_samples(samples: List[SampleNode],
-                            group: QueryGroupType) -> List[SampleNode]:
+def filter_matching_samples(samples: List[Sample],
+                            group: QueryGroupType) -> List[Sample]:
     """Filter given list of samples and return only those which match
     the given query group.
     """
@@ -257,10 +257,10 @@ def filter_matching_samples(samples: List[SampleNode],
             if sample.query(g_species_filter)]
 
 
-def collate_group_matches(node_samples: List[SampleNode],
+def collate_group_matches(node_samples: List[Sample],
                           node_factors: List[Factor],
                           group: QueryGroupType
-                          ) -> Tuple[Factor, SampleNode]:
+                          ) -> Tuple[Factor, Sample]:
     """Iterate over the samples and factors provided, and
     return (Factor, Sample) tuple pairs of those which match
     the given group.
@@ -283,7 +283,7 @@ def collate_group_matches(node_samples: List[SampleNode],
             yield factor, m_sample
 
 
-def parse_species_factor_match(sample: SampleNode,
+def parse_species_factor_match(sample: Sample,
                                group: QueryGroupType,
                                experiment: Node
                                ) -> List[str]:
@@ -310,7 +310,7 @@ def parse_species_factor_match(sample: SampleNode,
 
 
 def parse_group_match(factor: Factor,
-                      sample: SampleNode,
+                      sample: Sample,
                       group: QueryGroupType,
                       experiment: Node
                       ) -> List:
@@ -354,7 +354,7 @@ def create_uuid(metadata_node):
 def collate_node(drupal_node: Node,
                  groups: QueryGroupType
                  ) -> Tuple[pd.DataFrame, dict]:
-    """Collate the matching data and metadata from a given drupal node
+    """Collate the matching data and metadata from a given Drupal node
     by the given groups.
 
     TODO: Convert to a graph-based solution. Use either ChainMap or NetworkX.
@@ -363,15 +363,15 @@ def collate_node(drupal_node: Node,
     drupal_node_uuid = create_uuid(drupal_node)
     metadata = {drupal_node_uuid: drupal_node}
 
-    node_frames = []  # Holds all the created dataframes.
+    node_frames = []  # Holds all the created data frames.
 
     for group in groups:
 
         # Unpack the group object.
         g_label, g_unit_filter, __g_species_filter = group
-        group_matches = []  # Holds all the dataframes for this group.
+        group_matches = []  # Holds all the data frames for this group.
 
-        for experiment in drupal_node.assays:
+        for experiment in drupal_node.experiments:
 
             # Create the uuid for the experiment object,
             # and add it to the metadata dictionary.
@@ -453,3 +453,25 @@ def collate_node(drupal_node: Node,
     main_df = pd.concat(node_frames, axis=1, sort=False)
 
     return main_df, metadata
+
+
+def prepare_sub_graphs(node: Node) -> Tuple[dict]:
+    """Reformat each node into a series of graphs.
+
+    Each of which should be centered on the Experiment Node
+
+    :param node:
+    :return:
+    """
+
+    # Create a new graph object.
+    for experiment in node.experiments:
+
+        # Collapse species and factors from samples and their sources.
+        samples = experiment.samples + experiment.parental_samples
+
+        # Extract the species from those samples.
+        species = [util.get_all_elements(sample, "all_species")
+                   for sample in samples]
+
+        print(species)
