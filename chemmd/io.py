@@ -17,12 +17,14 @@ with the use of ``query groups``.
 # ----------------------------------------------------------------------------
 
 import collections
+import itertools
 import csv
 import json
 import logging
 import os
 import uuid
 from typing import List, Tuple, Union
+from pprint import pprint
 
 import pandas as pd
 import numpy as np
@@ -455,7 +457,7 @@ def collate_node(drupal_node: Node,
     return main_df, metadata
 
 
-def prepare_sub_graphs(node: Node) -> Tuple[dict]:
+def prepare_sub_graphs(node: Node) -> List[Tuple]:
     """Reformat each node into a series of graphs.
 
     Each of which should be centered on the Experiment Node
@@ -464,14 +466,35 @@ def prepare_sub_graphs(node: Node) -> Tuple[dict]:
     :return:
     """
 
+    sub_nodes = []
+
     # Create a new graph object.
     for experiment in node.experiments:
 
         # Collapse species and factors from samples and their sources.
         samples = experiment.samples + experiment.parental_samples
 
-        # Extract the species from those samples.
-        species = [util.get_all_elements(sample, "all_species")
-                   for sample in samples]
+        sample_factors = itertools.chain.from_iterable(
+            [util.get_all_elements(sample, "all_factors")
+             for sample in samples])
 
-        print(species)
+        factors = experiment.factors + experiment.parental_factors + list(sample_factors)
+
+        # Extract the species from those samples.
+        species = itertools.chain.from_iterable(
+            [util.get_all_elements(sample, "all_species")
+             for sample in samples])
+
+        species_refs = collections.ChainMap(
+            {s.species_reference: s.stoichiometry
+             for s in species})
+
+        factor_map = collections.ChainMap(
+            {f.factor_type: {
+                f.reference_value: {
+                    f.unit_reference: f}}
+             for f in factors})
+
+        sub_nodes.append((species_refs, factor_map))
+
+    return sub_nodes
