@@ -8,16 +8,26 @@ of the two.
 # ----------------------------------------------------------------------------
 # Imports
 # ----------------------------------------------------------------------------
-
+import logging
+import itertools
+import collections
+import uuid
+import functools
+import numpy as np
+import pandas as pd
 import param  # Boiler-plate for controlled class attributes.
 from textwrap import dedent  # Prevent indents from percolating to the user.
-from typing import Union, List
+from typing import Union, List, Tuple
 
 # ----------------------------------------------------------------------------
 # Local project imports.
 # ----------------------------------------------------------------------------
 
 from . import util
+from .. import io
+from .. transforms import INDEPENDENT_TRANSFORMS
+
+logger = logging.getLogger(__name__)
 
 
 class Node(param.Parameterized):
@@ -137,28 +147,22 @@ class Experiment(param.Parameterized):
 
     name = param.String(
         allow_None=False,
-        doc=dedent("""The user-supplied title of this assay.
-        """)
-    )
+        doc=dedent("""The user-supplied title of this assay. """))
 
     factors = param.List(
         allow_None=True,
-        doc=dedent("""A list of Factor objects that apply to this assay.
-        """)
-    )
+        doc=dedent("""A list of Factor objects that apply to this assay. """))
 
     samples = param.List(
         allow_None=True,
         doc=dedent("""A list of Sample objects that are used within 
         this assay.
-        """)
-    )
+        """))
 
     comments = param.List(
         allow_None=True,
-        doc=dedent("""A list of Comment objects that describe this assay.
-        """)
-    )
+        doc=dedent(
+            """A list of Comment objects that describe this assay. """))
 
     parental_factors = param.List(
         allow_None=True,
@@ -166,8 +170,7 @@ class Experiment(param.Parameterized):
         of this assay.
         
         All of these factors apply to this assay.
-        """)
-    )
+        """))
 
     parental_samples = param.List(
         allow_None=True,
@@ -175,25 +178,166 @@ class Experiment(param.Parameterized):
         of this assay.
         
         All of these Samples are used by this assay.
-        """)
-    )
+        """))
 
     parental_info = param.Dict(
         allow_None=True,
         doc=dedent("""The metadata information of the parent Node
         of this assay.
-        """)
-    )
+        """))
 
     parental_comments = param.List(
         allow_None=True,
         doc=dedent("""A list of comments from the parent Node 
         of this assay.
-        """)
-    )
+        """))
+
+    @property
+    def metadata_uuid(self):
+        return str(uuid.uuid3(uuid.NAMESPACE_DNS, str(self)))
+
+    # -------------------------------------------------------------------------
+    # Grouping functions.
+    # -------------------------------------------------------------------------
+    def get_all_samples(self):
+        return self.samples + self.parental_samples
+
+    def get_all_sources(self):
+        all_samples = self.get_all_samples()
+        all_sources = itertools.chain.from_iterable(
+            [util.get_all_elements(sample, "all_sources")
+             for sample in all_samples])
+        return list(all_sources)
+
+    def get_all_factors(self):
+        all_samples = self.get_all_samples()
+        all_sources = self.get_all_sources()
+        all_factors = itertools.chain.from_iterable(
+            [util.get_all_elements(sample, "all_factors")
+             for sample in all_samples + all_sources])
+        return self.parental_factors + self.factors + list(all_factors)
+
+    def get_all_species(self):
+        all_samples = self.get_all_samples()
+        all_sources = self.get_all_sources()
+        all_species = itertools.chain.from_iterable(
+            [util.get_all_elements(sample, "all_species")
+             for sample in all_samples + all_sources])
+        return list(all_species)
+
+    # -------------------------------------------------------------------------
+    # ChainMap creation functions.
+    # -------------------------------------------------------------------------
+    def build_factor_map(self):
+        all_factors = self.get_all_factors()
+        return collections.ChainMap(
+            {"__".join(filter(None, [f.factor_type,
+                                     f.unit_reference,
+                                     f.reference_value,
+                                     ])): f
+             for f in all_factors})
+
+    def build_species_map(self):
+        all_species = self.get_all_species()
+        return collections.ChainMap(
+            {s.species_reference: s.stoichiometry
+             for s in all_species})
+
+    def species_group_match(self, group):
+        __g_label, __g_unit_filter, g_species_filter = group
+        species_map = self.build_species_map()
+        if any(g_species in species_map.keys()
+               for g_species in g_species_filter):
+            return True
+
+    def factor_group_match(self, group):
+        __g_label, g_unit_filter, __g_species_filter = group
+        all_factors = self.get_all_factors()
+        if any(factor.query(g_unit_filter)
+               for factor in all_factors):
+            return True
+
+    def group_species_map_matches(self, species_group):
+        g_label, __g_unit_filter, g_species_filter = species_group
+        all_species = self.get_all_species()
+        matching_species_refs = [species
+                                 for species in all_species
+                                 if species.species_reference
+                                 in g_species_filter]
+        return {f"{g_label}__{idx}": match
+                for idx, match in enumerate(matching_species_refs)}
+
+    def group_factor_map_matches(self, group):
+        g_label, g_unit_filter, g_species_filter = group
+        factor_map = self.build_factor_map()
+        return {f"{g_label}__{f_label}": factor
+                for f_label, factor in factor_map.items()
+                if factor.query(g_unit_filter)}
+
+    def parse_factor_match(self, factor, group):
+        g_label, g_unit_filter, g_species_filter = group
+
+        if factor.is_csv_index:
+            csv_data_dict = io.load_csv_as_dict(self.datafile)
+            data = np.array(csv_data_dict[str(factor.csv_column_index)])
+
+            g_species_dicts = self.group_species_map_matches(group)
+            g_species_refs = [s.species_reference for s in
+                              g_species_dicts.values()]
+
+
+
+            # Now check for independent transforms that require
+            # species context.
+            for key, func in INDEPENDENT_TRANSFORMS.items():
+
+                if any(unit in key for unit in g_unit_filter):
+                    data = func(data, g_species_dicts[0])
+                    logger.info(f"Transform {func} called for {key}.")
+
+            return data
+        else:
+            return factor.value
+
+    def parse_species_match(self, species):
+        return species.species_reference
+
+    def export_by_groups(self, groups: List):
+        # TODO: Remove the need to specify a species column.
+        frame_dict = {}
+
+        for group in groups:
+            # Unpack the group object.
+            g_label, g_unit_filter, g_species_filter = group
+
+            if g_unit_filter == ("Species",) \
+                    and self.species_group_match(group):
+                g_species_dicts = self.group_species_map_matches(group)
+                g_species_data = {key: self.parse_species_match(value)
+                                  for key, value in g_species_dicts.items()}
+                frame_dict = {**frame_dict, **g_species_data}
+
+            elif self.factor_group_match(group) \
+                    and self.species_group_match(group):
+
+                g_factor_dicts = self.group_factor_map_matches(group)
+                g_factor_data = {key: self.parse_factor_match(value, group)
+                                 for key, value in g_factor_dicts.items()}
+
+                frame_dict = {**frame_dict, **g_factor_data}
+
+            else:
+                continue
+
+        df = pd.DataFrame(frame_dict)
+        df["metadata_uuid"] = self.metadata_uuid
+        metadata = {self.metadata_uuid: self}
+
+        return df, metadata
 
     @property
     def as_markdown(self):
+        # TODO: Examine function for completeness.
         text = f"### {self.assay_title}\n"
         for sample in self.samples:
             text += sample.as_markdown

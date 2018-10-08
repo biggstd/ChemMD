@@ -5,9 +5,10 @@ def apply_stoichiometry_coefficient(data, species):
     stoichiometry = species.stoichiometry
     return data * stoichiometry
 
+
 # ----------------------------------------------------------------------------
 # Global Definitions
 # ----------------------------------------------------------------------------
-TRANSFORMS = {
+INDEPENDENT_TRANSFORMS = {
     ("Molar"): apply_stoichiometry_coefficient,
 }

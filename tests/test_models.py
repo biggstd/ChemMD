@@ -57,3 +57,16 @@ def test_assay_node_creation(experiment_node_fixtures):
 
 def test_drupal_node_creation(drupal_node_fixture_a):
     assert isinstance(drupal_node_fixture_a, Node)
+
+
+# ----------------------------------------------------------------------------
+# Test Experiment functions.
+# ----------------------------------------------------------------------------
+def test_export_by_groups(sipos_drupal_node, nmr_groups):
+    x_groups, y_groups = nmr_groups
+    groups = x_groups + y_groups
+    experiments = sipos_drupal_node.experiments
+
+    for exp in experiments:
+        df, md = exp.export_by_groups(groups)
+        print(df)

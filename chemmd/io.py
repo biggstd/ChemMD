@@ -24,7 +24,6 @@ import logging
 import os
 import uuid
 from typing import List, Tuple, Union
-from pprint import pprint
 
 import pandas as pd
 import numpy as np
@@ -36,7 +35,7 @@ from .models.core import Comment, Factor, SpeciesFactor, DataFile
 from .models.core import QueryGroupType
 from .models.nodal import (Experiment, Node, Sample,
                            Source, NodeTypes)
-from .display.transforms import TRANSFORMS
+from .transforms import INDEPENDENT_TRANSFORMS
 
 logger = logging.getLogger(__name__)
 
@@ -334,7 +333,7 @@ def parse_group_match(factor: Factor,
         data = np.array(data_dict[str(factor.csv_column_index)])
         # TODO: Consider the location of this call to transforms.
         # Apply transforms.
-        for key, func in TRANSFORMS.items():
+        for key, func in INDEPENDENT_TRANSFORMS.items():
             if any(unit in key for unit in g_unit_filter) and matching_species:
                 logger.info(f"Transform {func} called for {key}.")
                 data = func(data, matching_species[0])
@@ -459,6 +458,8 @@ def collate_node(drupal_node: Node,
 
 def prepare_sub_graphs(node: Node) -> List[Tuple]:
     """Reformat each node into a series of graphs.
+
+    # TODO: Refactor -- Move to the `Nodal.Experiment` class.
 
     Each of which should be centered on the Experiment Node
 
