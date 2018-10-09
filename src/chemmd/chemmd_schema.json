@@ -51,7 +51,7 @@
           }
         },
         "required": [
-          "factorType"
+          "factor_type"
         ]
       },
       "factor_array": {
@@ -71,7 +71,7 @@
           }
         },
         "required": [
-          "speciesReference"
+          "species_reference"
         ]
       },
       "species_array": {
@@ -91,8 +91,8 @@
           }
         },
         "required": [
-          "commentTitle",
-          "commentBody"
+          "comment_title",
+          "comment_body"
         ]
       },
       "comment_array": {
@@ -104,7 +104,7 @@
       "source": {
         "type": "object",
         "properties": {
-          "name": {
+          "source_name": {
             "type": "string"
           },
           "source_factors": {
@@ -150,35 +150,35 @@
           "$ref": "#/definitions/sample"
         }
       },
-      "assay": {
+      "experiment": {
         "type": "object",
         "properties": {
-          "assay_title": {
+          "experiment_name": {
             "type": "string"
           },
-          "assay_comments": {
+          "experiment_comments": {
             "$ref": "#/definitions/comment_array"
           },
-          "assay_factors": {
+          "experiment_factors": {
             "$ref": "#/definitions/factor_array"
           },
-          "assay_samples": {
+          "experiment_samples": {
             "$ref": "#/definitions/sample_array"
           },
-          "assay_datafile": {
+          "experiment_datafile": {
             "type": "string"
           }
         }
       },
-      "assay_array": {
-        "type": "object",
+      "experiment_array": {
+        "type": "array",
         "items": {
-          "$ref": "#/definitions/assay"
+          "$ref": "#/definitions/experiment"
         }
       }
     },
     "type": "object",
-    "title": "drupal_node",
+    "title": "node",
     "properties": {
       "node_information": {
         "$ref": "#/definitions/node_information"
@@ -189,8 +189,8 @@
       "node_factors": {
         "$ref": "#/definitions/factor_array"
       },
-      "node_assays": {
-        "$ref": "#/definitions/assay_array"
+      "node_experiments": {
+        "$ref": "#/definitions/experiment_array"
       },
       "node_samples": {
         "$ref": "#/definitions/sample_array"
@@ -198,6 +198,6 @@
     },
     "required": [
       "node_information",
-      "node_assays"
+      "node_experiments"
     ]
   }

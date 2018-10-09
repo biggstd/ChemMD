@@ -12,8 +12,9 @@ import bokeh.models
 # ----------------------------------------------------------------------------
 # ChemMD imports
 # ----------------------------------------------------------------------------
-from chemmd import demos, io
-from chemmd.display.views.generic_table import table_layout
+from src.chemmd import demos
+from src.chemmd import io
+from src.chemmd.display.views.generic_table import table_layout
 
 # ----------------------------------------------------------------------------
 # Test Fixtures.

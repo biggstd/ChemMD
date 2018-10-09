@@ -35,11 +35,11 @@
             ]
         }
     ],
-    "node_assays": [
+    "node_experiments": [
         {
-            "assay_title": "Simulation Run 1",
-            "assay_datafile": "ernesto_sim_nmr_data.csv",
-            "assay_factors": [
+            "experiment_name": "Simulation Run 1",
+            "experiment_datafile": "ernesto_sim_nmr_data.csv",
+            "experiment_factors": [
                 {
                     "factor_type": "Measurement",
                     "reference_value": "27_Al",
@@ -55,9 +55,9 @@
             ]
         },
         {
-            "assay_title": "Simulation Run 2",
-            "assay_datafile": "ernesto_sim_nmr_data.csv",
-            "assay_factors": [
+            "experiment_name": "Simulation Run 2",
+            "experiment_datafile": "ernesto_sim_nmr_data.csv",
+            "experiment_factors": [
                 {
                     "factor_type": "Measurement",
                     "reference_value": "27_Al",
@@ -73,9 +73,9 @@
             ]
         },
         {
-            "assay_title": "Simulation Run 3",
-            "assay_datafile": "ernesto_sim_nmr_data.csv",
-            "assay_factors": [
+            "experiment_name": "Simulation Run 3",
+            "experiment_datafile": "ernesto_sim_nmr_data.csv",
+            "experiment_factors": [
                 {
                     "factor_type": "Measurement",
                     "reference_value": "27_Al",
@@ -91,9 +91,9 @@
             ]
         },
         {
-            "assay_title": "Simulation Run 4",
-            "assay_datafile": "ernesto_sim_nmr_data.csv",
-            "assay_factors": [
+            "experiment_name": "Simulation Run 4",
+            "experiment_datafile": "ernesto_sim_nmr_data.csv",
+            "experiment_factors": [
                 {
                     "factor_type": "Measurement",
                     "reference_value": "27_Al",
@@ -109,9 +109,9 @@
             ]
         },
         {
-            "assay_title": "Simulation Run 5",
-            "assay_datafile": "ernesto_sim_nmr_data.csv",
-            "assay_factors": [
+            "experiment_name": "Simulation Run 5",
+            "experiment_datafile": "ernesto_sim_nmr_data.csv",
+            "experiment_factors": [
                 {
                     "factor_type": "Measurement",
                     "reference_value": "27_Al",
@@ -130,7 +130,7 @@
     "node_comments": [
         {
             "comment_title": "Ab Inito Methods.",
-            "body": "AIMD simulations were carried out in the canonical ensemble (NVT ensemble) using the Quickstep module of the CP2K software and periodic boundary conditions.31 Periodic cubic boxes of side 14.35 Å containing one Al(OH)4 − anion and one Na+ ion solvated by 90 water molecules were used in the simulations. Three different simulations were carried out where Al to Na distances were fixed at approximately 2.5, 4.0, and 6.2 Å to simulate contact ion pairs (CIP), solvent-separated ion pairs (SSIP), and no pairing-like conditions, respectively. A similar box without the inclusion of Na+ was used as a reference aluminate solvated system. The temperature was targeted at 300 K using the CSVR32 (canonical sampling through velocity rescaling) thermostat with a time constant of 20 fs. Valence electrons were treated at the DFT level employing the revPBE functional with dual basis sets DZVP-MOLOPT-SR type with density from a cutoff of 400R. Core electrons on all atoms were represented by Goedecker−Teter−Hutter (GTH) pseudopotentials.33 The Grimme D334 dispersion correction for the revPBE functional was added with a 40 Å cutoff. A time step of 0.5 fs was used to generate the AIMD trajectory. All runs had an equilibration period of 2 ps. Al(OH)4 − clusters were extracted every 10 fs from the last 3 ps of each simulation for NMR calculations (∼300 points). The GIAO method35−39 as implemented in the Gaussian software package40 was used to calculate the Al NMR shielding tensor of the resulting clusters at the DFT(B3LYP/6-31G +(d,p)) level of theory.41"
+            "comment_body": "AIMD simulations were carried out in the canonical ensemble (NVT ensemble) using the Quickstep module of the CP2K software and periodic boundary conditions.31 Periodic cubic boxes of side 14.35 Å containing one Al(OH)4 − anion and one Na+ ion solvated by 90 water molecules were used in the simulations. Three different simulations were carried out where Al to Na distances were fixed at approximately 2.5, 4.0, and 6.2 Å to simulate contact ion pairs (CIP), solvent-separated ion pairs (SSIP), and no pairing-like conditions, respectively. A similar box without the inclusion of Na+ was used as a reference aluminate solvated system. The temperature was targeted at 300 K using the CSVR32 (canonical sampling through velocity rescaling) thermostat with a time constant of 20 fs. Valence electrons were treated at the DFT level employing the revPBE functional with dual basis sets DZVP-MOLOPT-SR type with density from a cutoff of 400R. Core electrons on all atoms were represented by Goedecker−Teter−Hutter (GTH) pseudopotentials.33 The Grimme D334 dispersion correction for the revPBE functional was added with a 40 Å cutoff. A time step of 0.5 fs was used to generate the AIMD trajectory. All runs had an equilibration period of 2 ps. Al(OH)4 − clusters were extracted every 10 fs from the last 3 ps of each simulation for NMR calculations (∼300 points). The GIAO method35−39 as implemented in the Gaussian software package40 was used to calculate the Al NMR shielding tensor of the resulting clusters at the DFT(B3LYP/6-31G +(d,p)) level of theory.41"
         }
     ]
 }

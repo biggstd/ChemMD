@@ -19,7 +19,7 @@ def test_factor_creation(factor_kwargs):
         factor = Factor(**kwargs)
         assert factor.factor_type == kwargs["factor_type"]
         assert factor.label == (kwargs["factor_type"],
-                                kwargs.get("reference_value", ""),
+                                kwargs.get("reference_value", None),
                                 kwargs.get("unit_reference"))
 
 
@@ -33,8 +33,8 @@ def test_species_factor_creation(species_factor_kwargs):
 def test_comment_creation(comment_kwargs):
     for kwargs in comment_kwargs:
         comment = Comment(**kwargs)
-        assert comment.name == kwargs["name"]
-        assert comment.body == kwargs["body"]
+        assert comment.comment_title == kwargs["comment_title"]
+        assert comment.comment_body == kwargs["comment_body"]
 
 
 # ----------------------------------------------------------------------------
@@ -62,11 +62,11 @@ def test_drupal_node_creation(drupal_node_fixture_a):
 # ----------------------------------------------------------------------------
 # Test Experiment functions.
 # ----------------------------------------------------------------------------
-def test_export_by_groups(sipos_drupal_node, nmr_groups):
+def test_build_factor_map(sipos_drupal_node, nmr_groups):
     x_groups, y_groups = nmr_groups
     groups = x_groups + y_groups
     experiments = sipos_drupal_node.experiments
 
     for exp in experiments:
-        df, md = exp.export_by_groups(groups)
-        print(df)
+        map = exp.build_factor_map()
+

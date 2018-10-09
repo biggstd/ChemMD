@@ -6,14 +6,8 @@
     "LOG_LEVEL": "DEBUG"
   },
   "TESTING": {
-    "BASE_PATH": "tests/demo_data",
     "HTTP_QUERY_STRING": "JQ",
     "HTTP_GROUP_QUERY": "GQ",
     "LOG_LEVEL": "DEBUG"
-  },
-  "JSON_DEMOS": {
-    "SIPOS_NMR": "tests/demo_json/sipos_2006_nmr_1.json",
-    "SIPOS_NMR_2": "tests/demo_json/sipos_2006_nmr_2.json",
-    "ERNESTO_NMR_1": "tests/demo_json/ernesto_nmr_1.json"
   }
 }

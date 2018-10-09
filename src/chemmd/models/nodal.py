@@ -11,13 +11,13 @@ of the two.
 import logging
 import itertools
 import collections
+import pprint
 import uuid
-import functools
 import numpy as np
 import pandas as pd
 import param  # Boiler-plate for controlled class attributes.
 from textwrap import dedent  # Prevent indents from percolating to the user.
-from typing import Union, List, Tuple
+from typing import Union, List
 
 # ----------------------------------------------------------------------------
 # Local project imports.
@@ -25,7 +25,7 @@ from typing import Union, List, Tuple
 
 from . import util
 from .. import io
-from .. transforms import INDEPENDENT_TRANSFORMS
+from ..transforms import INDEPENDENT_TRANSFORMS
 
 logger = logging.getLogger(__name__)
 
@@ -145,7 +145,7 @@ class Experiment(param.Parameterized):
         """)
     )
 
-    name = param.String(
+    experiment_name = param.String(
         allow_None=False,
         doc=dedent("""The user-supplied title of this assay. """))
 
@@ -196,6 +196,10 @@ class Experiment(param.Parameterized):
     def metadata_uuid(self):
         return str(uuid.uuid3(uuid.NAMESPACE_DNS, str(self)))
 
+    def data_length(self):
+        csv_data_dict = io.load_csv_as_dict(self.datafile)
+        return max
+
     # -------------------------------------------------------------------------
     # Grouping functions.
     # -------------------------------------------------------------------------
@@ -229,23 +233,59 @@ class Experiment(param.Parameterized):
     # ChainMap creation functions.
     # -------------------------------------------------------------------------
     def build_factor_map(self):
-        all_factors = self.get_all_factors()
-        return collections.ChainMap(
-            {"__".join(filter(None, [f.factor_type,
-                                     f.unit_reference,
-                                     f.reference_value,
-                                     ])): f
-             for f in all_factors})
 
-    def build_species_map(self):
-        all_species = self.get_all_species()
+        def build_species_keys(element):
+            species = sorted(util.get_all_elements(element, "all_species"),
+                             key=lambda s: s.stoichiometry)
+            return tuple({s.species_reference for s in species})
+
+        def build_factor_keys(factor):
+            return tuple(filter(None, [factor.factor_type,
+                                       factor.unit_reference,
+                                       factor.reference_value]))
+
+        mapping = {}
+
+        samples = self.get_all_samples()
+
+        for sample in samples:
+
+            sources = util.get_all_elements(sample, "all_sources")
+
+            for source in sources:
+
+                source_factors = util.get_all_elements(source, "all_factors")
+                source_species_keys = build_species_keys(source)
+
+                for factor in source_factors:
+                    factor_keys = build_factor_keys(factor)
+                    mapping[source_species_keys + factor_keys] = factor
+
+            sample_factors = util.get_all_elements(sample, "all_factors")
+            sample_species_keys = build_species_keys(sample)
+
+            for factor in sample_factors:
+                sample_factor_keys = build_factor_keys(factor)
+                mapping[sample_species_keys + sample_factor_keys] = factor
+
+        factors = self.parental_factors + self.factors
+        exp_species_keys = build_species_keys(self)
+        for factor in factors:
+            exp_factor_keys = build_factor_keys(factor)
+            mapping[exp_species_keys + exp_factor_keys] = factor
+
+        logger.debug(f"Created mapping: {pprint.pformat(mapping)}")
+        return mapping
+
+    def build_species_map(self, species):
         return collections.ChainMap(
             {s.species_reference: s.stoichiometry
-             for s in all_species})
+             for s in species})
 
     def species_group_match(self, group):
         __g_label, __g_unit_filter, g_species_filter = group
-        species_map = self.build_species_map()
+        all_species = self.get_all_species()
+        species_map = self.build_species_map(all_species)
         if any(g_species in species_map.keys()
                for g_species in g_species_filter):
             return True
@@ -260,79 +300,104 @@ class Experiment(param.Parameterized):
     def group_species_map_matches(self, species_group):
         g_label, __g_unit_filter, g_species_filter = species_group
         all_species = self.get_all_species()
-        matching_species_refs = [species
-                                 for species in all_species
-                                 if species.species_reference
-                                 in g_species_filter]
-        return {f"{g_label}__{idx}": match
-                for idx, match in enumerate(matching_species_refs)}
+        checks = itertools.product(all_species, g_species_filter)
+
+        matching_species = [species
+                            for species, filter in checks
+                            if species.query(filter)]
+
+        return matching_species
 
     def group_factor_map_matches(self, group):
         g_label, g_unit_filter, g_species_filter = group
-        factor_map = self.build_factor_map()
-        return {f"{g_label}__{f_label}": factor
-                for f_label, factor in factor_map.items()
-                if factor.query(g_unit_filter)}
+        # factor_map = self.build_factor_map()
+        all_factors = self.get_all_factors()
+
+        matching_factors = [factor for factor in all_factors
+                            if factor.query(g_unit_filter)]
+        return matching_factors
 
     def parse_factor_match(self, factor, group):
+
         g_label, g_unit_filter, g_species_filter = group
 
+        # Pick the 'best' matching factor. For now just pick this first.
+        # The list of species could be used to resolve the order.
+        # Prioritize csv column factors.
+        # Prioritize by factor value -- how to do for csv col factors?
+        # Throw an error?
+
+        # Get the associated species matches.
+        g_species_matches = self.group_species_map_matches(group)
+        sorted_species = sorted(g_species_matches, key=lambda s: s.stoichiometry,
+                                reverse=True)
+        species_match = sorted_species[0]
+
         if factor.is_csv_index:
+            print(factor)
             csv_data_dict = io.load_csv_as_dict(self.datafile)
             data = np.array(csv_data_dict[str(factor.csv_column_index)])
-
-            g_species_dicts = self.group_species_map_matches(group)
-            g_species_refs = [s.species_reference for s in
-                              g_species_dicts.values()]
-
-
-
             # Now check for independent transforms that require
             # species context.
             for key, func in INDEPENDENT_TRANSFORMS.items():
-
                 if any(unit in key for unit in g_unit_filter):
-                    data = func(data, g_species_dicts[0])
+                    data = func(data, species_match)
                     logger.info(f"Transform {func} called for {key}.")
-
             return data
         else:
-            return factor.value
+            return [factor.value, ]
 
     def parse_species_match(self, species):
-        return species.species_reference
+        return [species.species_reference, ]
 
     def export_by_groups(self, groups: List):
-        # TODO: Remove the need to specify a species column.
         frame_dict = {}
 
         for group in groups:
+            logger.debug(f"{'-' * 25} Entering group: {group}")
             # Unpack the group object.
             g_label, g_unit_filter, g_species_filter = group
+            # print(self.group_species_map_matches(group))
+            # logger.debug(f"{self.group_species_map_matches(group)}")
 
             if g_unit_filter == ("Species",) \
                     and self.species_group_match(group):
-                g_species_dicts = self.group_species_map_matches(group)
-                g_species_data = {key: self.parse_species_match(value)
-                                  for key, value in g_species_dicts.items()}
-                frame_dict = {**frame_dict, **g_species_data}
+                g_species_matches = list(self.group_species_map_matches(group))
+                # Return the first matching species reference.
+                for g_species, species in itertools.product(g_species_filter, g_species_matches):
+                    if species.query(g_species):
+                        frame_dict[g_label] = species.species_reference
+                        logger.debug(f"Species Group match found. {species.species_reference}")
+                        continue
 
             elif self.factor_group_match(group) \
                     and self.species_group_match(group):
 
-                g_factor_dicts = self.group_factor_map_matches(group)
-                g_factor_data = {key: self.parse_factor_match(value, group)
-                                 for key, value in g_factor_dicts.items()}
+                g_factor_matches = self.group_factor_map_matches(group)
+                logger.debug(f"Found these matching factors: {g_factor_matches}")
+                if len(g_factor_matches) > 1:
+                    logger.warn(f"{len(g_factor_matches)} factor matches found."
+                                " Only returning the first match.")
 
-                frame_dict = {**frame_dict, **g_factor_data}
+                g_factor_data = self.parse_factor_match(g_factor_matches[0], group)
+                frame_dict[g_label] = g_factor_data
+
+                continue
 
             else:
+                logger.debug(f"No match found for {group}")
                 continue
+
+        factor_size = max(len(values) for values in frame_dict.values())
+
+        for key, value in frame_dict.items():
+            if len(value) == 1:
+                frame_dict[key] = value * factor_size
 
         df = pd.DataFrame(frame_dict)
         df["metadata_uuid"] = self.metadata_uuid
         metadata = {self.metadata_uuid: self}
-
+        logger.debug(df)
         return df, metadata
 
     @property
@@ -358,7 +423,7 @@ class Sample(param.Parameterized):
 
     """
 
-    name = param.String(
+    sample_name = param.String(
         allow_None=False,
         doc=dedent("""The user supplied name of this sample.
         """)
@@ -465,7 +530,7 @@ class Source(param.Parameterized):
     # TODO: Consider adding nested sources.
     """
 
-    name = param.String(
+    source_name = param.String(
         allow_None=False,
         doc=dedent("""User given name of this source.
         """)

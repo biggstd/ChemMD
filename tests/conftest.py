@@ -10,18 +10,16 @@ import pytest
 # ----------------------------------------------------------------------------
 # Imports for Testing
 # ----------------------------------------------------------------------------
-
-from chemmd import demos
+from chemmd.demos import loaders
 
 from chemmd import io
 from chemmd.models.core import Factor, SpeciesFactor, Comment
 from chemmd.models.nodal import Source, Sample, Experiment, Node
 
-# ----------------------------------------------------------------------------
+
+# ----------------- -----------------------------------------------------------
 # Globals and constants
 # ----------------------------------------------------------------------------
-# Json demo files.
-SIPOS = demos["SIPOS_NMR"]
 
 
 # ----------------------------------------------------------------------------
@@ -72,8 +70,8 @@ def species_factor_kwargs():
 def comment_kwargs():
     return [
         {
-            "name": "Test comment number 1.",
-            "body": "Test comment 1 body."
+            "comment_title": "Test comment number 1.",
+            "comment_body": "Test comment 1 body."
         }
     ]
 
@@ -104,7 +102,7 @@ def comment_factor_fixtures(comment_kwargs):
 @pytest.fixture
 def source_node_fixtures(factor_fixtures, species_factor_fixtures,
                          comment_factor_fixtures):
-    return [Source(**dict(name="Test Source",
+    return [Source(**dict(source_name="Test Source",
                           species=species_factor_fixtures,
                           factors=factor_fixtures,
                           comments=comment_factor_fixtures))]
@@ -141,8 +139,8 @@ def drupal_node_fixture_a(experiment_node_fixtures, factor_fixtures,
 
 
 @pytest.fixture
-def sipos_drupal_node(sipos_nmr_json):
-    return io.parse_node_json(io.read_idream_json(sipos_nmr_json))
+def sipos_drupal_node():
+    return loaders.node_demo_by_key("SIPOS_NMR")
 
 
 # ----------------------------------------------------------------------------
@@ -151,22 +149,20 @@ def sipos_drupal_node(sipos_nmr_json):
 
 @pytest.fixture
 def sipos_nmr_json():
-    return demos["SIPOS_NMR"]
+    path = loaders.json_demo_path(loaders.JSON_DEMOS["SIPOS_NMR"])
+    return io.read_idream_json(path)
 
 
 @pytest.fixture
 def sipos_nmr2_json():
-    return demos["SIPOS_NMR_2"]
+    path = loaders.json_demo_path(loaders.JSON_DEMOS["SIPOS_NMR_2"])
+    return io.read_idream_json(path)
 
 
 @pytest.fixture
 def ernesto_nmr():
-    return demos["ERNESTO_NMR_1"]
-
-
-# @pytest.fixture
-# def sipos_raman():
-#     return demos["SIPOS_RAMAN"]
+    path = loaders.json_demo_path(loaders.JSON_DEMOS["ERNESTO_NMR_1"])
+    return io.read_idream_json(path)
 
 
 # ----------------------------------------------------------------------------
@@ -175,7 +171,7 @@ def ernesto_nmr():
 
 @pytest.fixture
 def nmr_groups():
-    x_groups = (('Total Aluminate Concentration', 'Molar', ("Al",)),
+    x_groups = (('Total Aluminate Concentration', 'Molar', ("Al*",)),
                 ('Counter Ion Concentration', 'Molar', ("Na+", "Li+", "Cs+", "K+")),
                 ('Counter Ion', ('Species',), ("Na+", "Li+", "Cs+", "K+",)),
                 ('Base Concentration', 'Molar', ("OH-",)))

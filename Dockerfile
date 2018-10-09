@@ -47,7 +47,7 @@ COPY ./bokeh_applications/table /opt/bkapps/table
 # Copy the test applications to the container.
 # TODO: Consider a better way to handle this. Perhaps without changes
 #       to the docker file.
-COPY ./tests/ /tests/
+COPY tests /tests/
 
 # Declare the entrypoint. This is the script that will be run
 # by default when the Docker container launches.

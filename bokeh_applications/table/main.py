@@ -12,9 +12,9 @@ import bokeh.models
 # ----------------------------------------------------------------------------
 # ChemMD imports
 # ----------------------------------------------------------------------------
-from chemmd import io
-from chemmd.display import helpers
-from chemmd.display.views.generic_table import table_layout
+from src.chemmd import io
+from src.chemmd.display import helpers
+from src.chemmd.display.views.generic_table import table_layout
 
 # ----------------------------------------------------------------------------
 # Read the HTML session.

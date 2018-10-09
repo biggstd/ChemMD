@@ -8,8 +8,8 @@
     },
     "node_comments": [
       {
-        "name": "Study level comment on Sipos 2006.",
-        "body": "I manually pulled this points out with a web tool."
+        "comment_title": "Study level comment on Sipos 2006.",
+        "comment_body": "I manually pulled this points out with a web tool."
       }
     ],
     "node_factors": [
@@ -36,11 +36,11 @@
         "reference_value": "[KAl(SO4)2]"
       }
     ],
-    "node_assays": [
+    "node_experiments": [
       {
-        "assay_title": "Potassium Hydroxide Assay",
-        "assay_datafile": "sipos_2006_fig3_KOH.csv",
-        "assay_samples": [
+        "experiment_name": "Potassium Hydroxide Assay",
+        "experiment_datafile": "sipos_2006_fig3_KOH.csv",
+        "experiment_samples": [
           {
             "sample_name": "Potassium Hydroxide",
             "sample_factors": [
@@ -84,7 +84,7 @@
             ],
             "sample_sources": [
               {
-                "name": "Aluminum Wire",
+                "sample_name": "Aluminum Wire",
                 "source_factors": [
                   {
                     "factor_type": "Material Property",
@@ -103,17 +103,17 @@
             ]
           }
         ],
-        "assay_comments": [
+        "experiment_comments": [
           {
-            "name": "Data extraction method.",
-            "body": "I manually pulled this points out with a web tool."
+            "comment_title": "Data extraction method.",
+            "comment_body": "I manually pulled this points out with a web tool."
           }
         ]
       },
       {
-        "assay_title": "Lithium Hydroxide Assay",
-        "assay_datafile": "sipos_2006_fig3_LiOH.csv",
-        "assay_samples": [
+        "experiment_name": "Lithium Hydroxide Assay",
+        "experiment_datafile": "sipos_2006_fig3_LiOH.csv",
+        "experiment_samples": [
           {
             "sample_name": "Lithium Hydroxide",
             "sample_factors": [
@@ -157,7 +157,7 @@
             ],
             "sample_sources": [
               {
-                "name": "Aluminum Wire",
+                "source_name": "Aluminum Wire",
                 "source_factors": [
                   {
                     "factor_type": "Material Property",
@@ -178,9 +178,9 @@
         ]
       },
       {
-        "assay_title": "Sodium Hydroxide Assay",
-        "assay_datafile": "sipos_2006_fig3_NaOH.csv",
-        "assay_samples": [
+        "experiment_name": "Sodium Hydroxide Assay",
+        "experiment_datafile": "sipos_2006_fig3_NaOH.csv",
+        "experiment_samples": [
           {
             "sample_name": "Sodium Hydroxide",
             "sample_factors": [
@@ -245,9 +245,9 @@
         ]
       },
       {
-        "assay_title": "Sodium Hydroxide v Aluminate Assay",
-        "assay_datafile": "sipos_2006_fig2.csv",
-        "assay_samples": [
+        "experiment_name": "Sodium Hydroxide v Aluminate Assay",
+        "experiment_datafile": "sipos_2006_fig2.csv",
+        "experiment_samples": [
           {
             "sample_name": "Sodium Hydroxide",
             "sample_factors": [

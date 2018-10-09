@@ -45,6 +45,7 @@ class Factor(param.Parameterized):
 
     decimal_value = param.Number(
         allow_None=True,
+        default=None,
         doc=dedent("""The decimal value of this factor.
         """)
     )
@@ -58,6 +59,7 @@ class Factor(param.Parameterized):
 
     reference_value = param.String(
         allow_None=True,
+        default=None,
         doc=dedent("""A reference value of this factor. This should 
         be used when The value of this factor has a discreet set of 
         possible values.
@@ -66,6 +68,7 @@ class Factor(param.Parameterized):
 
     unit_reference = param.String(
         allow_None=True,  # Some string or factor values may not have units.
+        default=None,
         doc=dedent("""The unit that describes this factor.
         """)
     )
@@ -181,13 +184,13 @@ class Comment(param.Parameterized):
 
     """
 
-    name = param.String(
+    comment_title = param.String(
         allow_None=False,  # There must at least be a comment name.
         doc=dedent("""The title of a comment.
         """)
     )
 
-    body = param.String(
+    comment_body = param.String(
         allow_None=Factor,
         doc=dedent("""The body text of a comment.
         """)

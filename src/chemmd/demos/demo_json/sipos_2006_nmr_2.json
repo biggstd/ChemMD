@@ -87,16 +87,16 @@
             ]
         }
     ],
-    "node_assays": [
+    "node_experiments": [
         {
-            "assay_title": "Al 27 NMR of Sodium Aluminate",
-            "assay_datafile": "sipos_2006_fig2.csv"
+            "experiment_name": "Al 27 NMR of Sodium Aluminate",
+            "experiment_datafile": "sipos_2006_fig2.csv"
         }
     ],
     "node_comments": [
         {
             "comment_title": "Study level comment on Sipos 2006.",
-            "body": "I manually pulled this points out with a web tool."
+            "comment_body": "I manually pulled this points out with a web tool."
         }
     ]
 }
