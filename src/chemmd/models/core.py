@@ -82,12 +82,14 @@ class Factor(param.Parameterized):
     )
 
     @property
-    def label(self) -> Tuple[str, str, str]:
+    def label(self) -> Tuple[str, ...]:
         """A label property. These three parameters are the categorical units or
         ontology term of this factor.
 
         """
-        return self.factor_type, self.reference_value, self.unit_reference
+        return tuple(filter(None, [self.factor_type,
+                                   self.unit_reference,
+                                   self.reference_value]))
 
     @property
     def is_csv_index(self) -> bool:

@@ -13,6 +13,7 @@ import itertools
 import collections
 import pprint
 import uuid
+import re
 import numpy as np
 import pandas as pd
 import param  # Boiler-plate for controlled class attributes.
@@ -84,6 +85,10 @@ class Node(param.Parameterized):
         assays contained by this Node instance.
         """)
     )
+
+    def mapping(self):
+        mapping = {"node": self}
+        return mapping
 
     @property
     def as_markdown(self):
@@ -196,57 +201,29 @@ class Experiment(param.Parameterized):
     def metadata_uuid(self):
         return str(uuid.uuid3(uuid.NAMESPACE_DNS, str(self)))
 
-    def data_length(self):
+    def parse_factor_value(self, factor):
         csv_data_dict = io.load_csv_as_dict(self.datafile)
-        return max
+        factor_size = max(len(values) for values in csv_data_dict.values())
 
-    # -------------------------------------------------------------------------
-    # Grouping functions.
-    # -------------------------------------------------------------------------
-    def get_all_samples(self):
-        return self.samples + self.parental_samples
-
-    def get_all_sources(self):
-        all_samples = self.get_all_samples()
-        all_sources = itertools.chain.from_iterable(
-            [util.get_all_elements(sample, "all_sources")
-             for sample in all_samples])
-        return list(all_sources)
-
-    def get_all_factors(self):
-        all_samples = self.get_all_samples()
-        all_sources = self.get_all_sources()
-        all_factors = itertools.chain.from_iterable(
-            [util.get_all_elements(sample, "all_factors")
-             for sample in all_samples + all_sources])
-        return self.parental_factors + self.factors + list(all_factors)
-
-    def get_all_species(self):
-        all_samples = self.get_all_samples()
-        all_sources = self.get_all_sources()
-        all_species = itertools.chain.from_iterable(
-            [util.get_all_elements(sample, "all_species")
-             for sample in all_samples + all_sources])
-        return list(all_species)
+        if factor.is_csv_index:
+            data = np.array(csv_data_dict[str(factor.csv_column_index)])
+            # logger.debug(f"Found data for {pprint.pformat(factor)}:\n {data}")
+            return data
+        elif factor.value:
+            return [factor.value, ] * factor_size
 
     # -------------------------------------------------------------------------
     # ChainMap creation functions.
     # -------------------------------------------------------------------------
-    def build_factor_map(self):
+    def species_factor_mapping(self, parent_node):
 
-        def build_species_keys(element):
-            species = sorted(util.get_all_elements(element, "all_species"),
-                             key=lambda s: s.stoichiometry)
-            return tuple({s.species_reference for s in species})
+        # logger.debug(f"Generating mapping for {self}")
 
-        def build_factor_keys(factor):
-            return tuple(filter(None, [factor.factor_type,
-                                       factor.unit_reference,
-                                       factor.reference_value]))
+        source_mapping = {}
+        sample_mapping = {}
 
-        mapping = {}
-
-        samples = self.get_all_samples()
+        samples = self.samples + self.parental_samples
+        factors = self.factors + self.parental_factors
 
         for sample in samples:
 
@@ -254,151 +231,33 @@ class Experiment(param.Parameterized):
 
             for source in sources:
 
-                source_factors = util.get_all_elements(source, "all_factors")
-                source_species_keys = build_species_keys(source)
+                source_maps = source.mapping()
+                logger.debug(source_maps)
+                for source_map in source_maps.values():
+                    # logger.debug(source_map)
+                    source_map["factor_data"] = self.parse_factor_value(source_map["factor"])
+                    source_map["sample"] = sample
+                    source_map["experiment"] = self
+                    source_map["parent_node"] = parent_node
+                # logger.debug(f"source map: {source_maps}")
 
-                for factor in source_factors:
-                    factor_keys = build_factor_keys(factor)
-                    mapping[source_species_keys + factor_keys] = factor
+                source_mapping = {**source_maps, **source_mapping}
 
-            sample_factors = util.get_all_elements(sample, "all_factors")
-            sample_species_keys = build_species_keys(sample)
+            sample_maps = sample.mapping(factors)
 
-            for factor in sample_factors:
-                sample_factor_keys = build_factor_keys(factor)
-                mapping[sample_species_keys + sample_factor_keys] = factor
+            for sample_map in sample_maps.values():
+                # logger.debug(sample_map)
+                sample_map["factor_data"] = self.parse_factor_value(sample_map["factor"])
+                sample_map["experiment"] = self
+                sample_map["parent_node"] = parent_node
 
-        factors = self.parental_factors + self.factors
-        exp_species_keys = build_species_keys(self)
-        for factor in factors:
-            exp_factor_keys = build_factor_keys(factor)
-            mapping[exp_species_keys + exp_factor_keys] = factor
+            sample_mapping = {**sample_maps, **sample_mapping}
 
-        logger.debug(f"Created mapping: {pprint.pformat(mapping)}")
+        # logger.debug(f"sample map: {sample_maps}")
+
+        mapping = {**source_mapping, **sample_mapping}
+        # logger.debug(f"From {self}, Created mapping: {pprint.pformat(mapping)}")
         return mapping
-
-    def build_species_map(self, species):
-        return collections.ChainMap(
-            {s.species_reference: s.stoichiometry
-             for s in species})
-
-    def species_group_match(self, group):
-        __g_label, __g_unit_filter, g_species_filter = group
-        all_species = self.get_all_species()
-        species_map = self.build_species_map(all_species)
-        if any(g_species in species_map.keys()
-               for g_species in g_species_filter):
-            return True
-
-    def factor_group_match(self, group):
-        __g_label, g_unit_filter, __g_species_filter = group
-        all_factors = self.get_all_factors()
-        if any(factor.query(g_unit_filter)
-               for factor in all_factors):
-            return True
-
-    def group_species_map_matches(self, species_group):
-        g_label, __g_unit_filter, g_species_filter = species_group
-        all_species = self.get_all_species()
-        checks = itertools.product(all_species, g_species_filter)
-
-        matching_species = [species
-                            for species, filter in checks
-                            if species.query(filter)]
-
-        return matching_species
-
-    def group_factor_map_matches(self, group):
-        g_label, g_unit_filter, g_species_filter = group
-        # factor_map = self.build_factor_map()
-        all_factors = self.get_all_factors()
-
-        matching_factors = [factor for factor in all_factors
-                            if factor.query(g_unit_filter)]
-        return matching_factors
-
-    def parse_factor_match(self, factor, group):
-
-        g_label, g_unit_filter, g_species_filter = group
-
-        # Pick the 'best' matching factor. For now just pick this first.
-        # The list of species could be used to resolve the order.
-        # Prioritize csv column factors.
-        # Prioritize by factor value -- how to do for csv col factors?
-        # Throw an error?
-
-        # Get the associated species matches.
-        g_species_matches = self.group_species_map_matches(group)
-        sorted_species = sorted(g_species_matches, key=lambda s: s.stoichiometry,
-                                reverse=True)
-        species_match = sorted_species[0]
-
-        if factor.is_csv_index:
-            print(factor)
-            csv_data_dict = io.load_csv_as_dict(self.datafile)
-            data = np.array(csv_data_dict[str(factor.csv_column_index)])
-            # Now check for independent transforms that require
-            # species context.
-            for key, func in INDEPENDENT_TRANSFORMS.items():
-                if any(unit in key for unit in g_unit_filter):
-                    data = func(data, species_match)
-                    logger.info(f"Transform {func} called for {key}.")
-            return data
-        else:
-            return [factor.value, ]
-
-    def parse_species_match(self, species):
-        return [species.species_reference, ]
-
-    def export_by_groups(self, groups: List):
-        frame_dict = {}
-
-        for group in groups:
-            logger.debug(f"{'-' * 25} Entering group: {group}")
-            # Unpack the group object.
-            g_label, g_unit_filter, g_species_filter = group
-            # print(self.group_species_map_matches(group))
-            # logger.debug(f"{self.group_species_map_matches(group)}")
-
-            if g_unit_filter == ("Species",) \
-                    and self.species_group_match(group):
-                g_species_matches = list(self.group_species_map_matches(group))
-                # Return the first matching species reference.
-                for g_species, species in itertools.product(g_species_filter, g_species_matches):
-                    if species.query(g_species):
-                        frame_dict[g_label] = species.species_reference
-                        logger.debug(f"Species Group match found. {species.species_reference}")
-                        continue
-
-            elif self.factor_group_match(group) \
-                    and self.species_group_match(group):
-
-                g_factor_matches = self.group_factor_map_matches(group)
-                logger.debug(f"Found these matching factors: {g_factor_matches}")
-                if len(g_factor_matches) > 1:
-                    logger.warn(f"{len(g_factor_matches)} factor matches found."
-                                " Only returning the first match.")
-
-                g_factor_data = self.parse_factor_match(g_factor_matches[0], group)
-                frame_dict[g_label] = g_factor_data
-
-                continue
-
-            else:
-                logger.debug(f"No match found for {group}")
-                continue
-
-        factor_size = max(len(values) for values in frame_dict.values())
-
-        for key, value in frame_dict.items():
-            if len(value) == 1:
-                frame_dict[key] = value * factor_size
-
-        df = pd.DataFrame(frame_dict)
-        df["metadata_uuid"] = self.metadata_uuid
-        metadata = {self.metadata_uuid: self}
-        logger.debug(df)
-        return df, metadata
 
     @property
     def as_markdown(self):
@@ -484,6 +343,25 @@ class Sample(param.Parameterized):
                 nodes_out.append(species)
 
         return nodes_out
+
+    def species_map(self):
+        species = util.get_all_elements(self, "all_species")
+        species_map = {s.species_reference: s.stoichiometry
+                       for s in species}
+        return species_map
+
+    def mapping(self, applied_factors=[]):
+        factors = applied_factors + util.get_all_elements(self, "all_factors")
+        mapping = {}
+        species_map = self.species_map()
+
+        for factor in factors:
+            factor_mapping = {"factor": factor,
+                              "sample": self,
+                              "species_map": species_map}
+            mapping[tuple(species_map.keys()), factor.label] = factor_mapping
+
+        return mapping
 
     @property
     def all_sources(self) -> List:
@@ -574,6 +452,25 @@ class Source(param.Parameterized):
         :return:
         """
         return util.get_all_elements(self, 'species')
+
+    def species_map(self):
+        species = util.get_all_elements(self, "all_species")
+        species_map = {s.species_reference: s.stoichiometry
+                       for s in species}
+        return species_map
+
+    def mapping(self, applied_factors=[]):
+        factors = applied_factors + util.get_all_elements(self, "all_factors")
+        mapping = {}
+        species_map = self.species_map()
+
+        for factor in factors:
+            factor_mapping = {"factor": factor,
+                              "source": self,
+                              "species_map": species_map}
+            mapping[tuple(species_map.keys()), factor.label] = factor_mapping
+
+        return mapping
 
     @property
     def as_markdown(self):

@@ -23,19 +23,22 @@ import json
 import logging
 import os
 import uuid
+# import pprint
+import re
+# from textwrap import dedent
 from typing import List, Tuple, Union
 
 import pandas as pd
-import numpy as np
+# import numpy as np
 
 from . import config
 
-from .models import util
+# from .models import util
 from .models.core import Comment, Factor, SpeciesFactor, DataFile
 from .models.core import QueryGroupType
 from .models.nodal import (Experiment, Node, Sample,
                            Source, NodeTypes)
-from .transforms import INDEPENDENT_TRANSFORMS
+from .transforms import apply_transform
 
 logger = logging.getLogger(__name__)
 
@@ -81,11 +84,15 @@ def prepare_nodes_for_bokeh(x_groups: QueryGroupType,
     """
     cds_frames = []
     metadata_dict = {}
+    groups = x_groups + y_groups
 
     for node in nodes:
-        data, metadata = collate_node(node, x_groups + y_groups)
-        cds_frames.append(pd.DataFrame(data))
-        metadata_dict = {**metadata_dict, **metadata}
+        for exp in node.experiments:
+            mapping = exp.species_factor_mapping(node)
+            group_mapping = create_group_mapping(mapping, groups)
+            data, metadata = group_mapping_as_df(group_mapping)
+            cds_frames.append(pd.DataFrame(data))
+            metadata_dict = {**metadata_dict, **metadata}
 
     # Concatenate all the data frames together and reset the index.
     main_df = pd.concat(cds_frames, sort=False)
@@ -95,8 +102,8 @@ def prepare_nodes_for_bokeh(x_groups: QueryGroupType,
     # these columns and return two different data frames.
     # TODO: Re-examine this code. Should I need to swap levels here?
     # Perhaps this arrangement should be set as the default.
-    metadata_df = main_df.swaplevel(0, 1, axis=1).xs("metadata", axis=1)
-    main_df = main_df.swaplevel(0, 1, axis=1).xs("data", axis=1)
+    metadata_df = main_df.xs("metadata", axis=1)
+    main_df = main_df.xs("data", axis=1)
 
     return main_df, metadata_df, metadata_dict
 
@@ -235,116 +242,8 @@ def load_csv_as_dict(path: str, base_path: str = config["BASE_PATH"]
 
 
 # ----------------------------------------------------------------------------
-# Model to Pandas DataFrame Functions
+#
 # ----------------------------------------------------------------------------
-
-
-def filter_matching_factors(factors: List[Factor],
-                            group: QueryGroupType
-                            ) -> List[Factor]:
-    """Filter given list of factors and return only those which match
-    the given query group.
-    """
-    __g_label, g_unit_filter, __g_species_filter = group
-    return [factor for factor in factors
-            if factor.query(g_unit_filter)
-            or g_unit_filter == ("Species",)]
-
-
-def filter_matching_samples(samples: List[Sample],
-                            group: QueryGroupType) -> List[Sample]:
-    """Filter given list of samples and return only those which match
-    the given query group.
-    """
-    __g_label, __g_unit_filter, g_species_filter = group
-    return [sample for sample in samples
-            if sample.query(g_species_filter)]
-
-
-def collate_group_matches(node_samples: List[Sample],
-                          node_factors: List[Factor],
-                          group: QueryGroupType
-                          ) -> Tuple[Factor, Sample]:
-    """Iterate over the samples and factors provided, and
-    return (Factor, Sample) tuple pairs of those which match
-    the given group.
-    """
-    # Find matching factors and samples of the top-level node.
-    matching_samples = filter_matching_samples(node_samples, group)
-    matching_factors = filter_matching_factors(node_factors, group)
-
-    # Samples are the next highest level node.
-    for m_sample in matching_samples:
-
-        # Get those factors specific to this sample.
-        m_sample_factors = filter_matching_factors(m_sample.factors, group)
-        # The factors which apply to this sample node are all of the
-        # parental factors, combined with its private factors.
-        m_factors = matching_factors + m_sample_factors
-
-        # Provide the requested data.
-        for factor in m_factors:
-            yield factor, m_sample
-
-
-def parse_species_factor_match(sample: Sample,
-                               group: QueryGroupType,
-                               experiment: Node
-                               ) -> List[str]:
-    """Parse a matching SpeciesFactor. 
-
-    Return a list of the string representation of the matching 
-    species. The length of the list is determined by the length of
-    the csv data associated with the species factor.
-    """
-    # Unpack the group, load the csv data and determine its length.
-    __g_label, __g_unit_filter, g_species_filter = group
-    data_dict = load_csv_as_dict(experiment.assay_datafile)
-    factor_size = max(len(values) for values in data_dict.values())
-
-    # Find the actual matching species in this sample set, as a sample
-    # can have more than one species and not all of them must be matches.
-    matching_species = [species
-                        for species in sample.all_species
-                        if species.species_reference in g_species_filter]
-
-    # Return the first of these species found.
-    # TODO: Consider what should be done with multiple matches?
-    return [matching_species[0].species_reference] * factor_size
-
-
-def parse_group_match(factor: Factor,
-                      sample: Sample,
-                      group: QueryGroupType,
-                      experiment: Node
-                      ) -> List:
-    """Pares a matching group. Handles normal and csv index factors.
-    """
-    # Unpack the group object.
-    __g_label, g_unit_filter, g_species_filter = group
-
-    # Get the size of this retrieved data array.
-    data_dict = load_csv_as_dict(experiment.assay_datafile)
-    factor_size = max(len(values) for values in data_dict.values())
-
-    # Find the matching species.
-    matching_species = [species
-                        for species in sample.all_species
-                        if species.species_reference in g_species_filter]
-
-    if factor.is_csv_index:
-        data = np.array(data_dict[str(factor.csv_column_index)])
-        # TODO: Consider the location of this call to transforms.
-        # Apply transforms.
-        for key, func in INDEPENDENT_TRANSFORMS.items():
-            if any(unit in key for unit in g_unit_filter) and matching_species:
-                logger.info(f"Transform {func} called for {key}.")
-                data = func(data, matching_species[0])
-        return data
-    else:
-        return [factor.value] * factor_size
-
-
 def create_uuid(metadata_node):
     """Create a uuid to label a metadata node.
 
@@ -355,150 +254,98 @@ def create_uuid(metadata_node):
     return str(uuid.uuid3(uuid.NAMESPACE_DNS, str(metadata_node)))
 
 
-def collate_node(drupal_node: Node,
-                 groups: QueryGroupType
-                 ) -> Tuple[pd.DataFrame, dict]:
-    """Collate the matching data and metadata from a given Drupal node
-    by the given groups.
+def create_group_mapping(mapping, groups: List):
+    group_mapping = {}
 
-    TODO: Convert to a graph-based solution. Use either ChainMap or NetworkX.
-    """
-    # Create the uuid for the Node, and add it to the metadata dictionary.
-    drupal_node_uuid = create_uuid(drupal_node)
-    metadata = {drupal_node_uuid: drupal_node}
+    def get_matching_species(species_list, group):
+        g_label, g_unit_filter, g_species_filter = group
 
-    node_frames = []  # Holds all the created data frames.
+        for s, sf in itertools.product(species_list, g_species_filter):
+            if re.match(sf, s):
+                yield s
+
+    # species_tuples = list(zip(*list(mapping.keys())))[0]
+    # species = list(set(itertools.chain.from_iterable(species_tuples)))
+
+    # logger.debug(f"Mapping species: {species}")
 
     for group in groups:
+        logger.debug(f"Examining group:\n\t{group}")
+        g_label, g_unit_filter, g_species_filter = group
 
-        # Unpack the group object.
-        g_label, g_unit_filter, __g_species_filter = group
-        group_matches = []  # Holds all the data frames for this group.
+        # matching_species = list(get_matching_species(species, group))
+        # logger.debug(f"Found matching species:\n\t{matching_species}")
+        # if not matching_species:
+        #     continue
 
-        for experiment in drupal_node.experiments:
+        if g_unit_filter != ("Species",):
+            for keys, metadata in mapping.items():
 
-            # Create the uuid for the experiment object,
-            # and add it to the metadata dictionary.
-            experiment_node_uuid = create_uuid(experiment)
-            metadata[experiment_node_uuid] = experiment
+                species, factor_label = keys
+                group_species_matches = list(get_matching_species(species, group))
+                if group_species_matches:
+                    logger.debug(f"Species ----- {group_species_matches}")
 
-            # Find the matching sample and factors of this experiment.
-            # This includes all those samples and factors from the parent node.
-            matches = collate_group_matches(
-                experiment.samples + drupal_node.samples,
-                experiment.factors + drupal_node.factors,
-                group)
+                if group_species_matches and metadata["factor"].query(g_unit_filter):
+                    metadata["species_keys"] = list(group_species_matches)
+                    group_mapping[group] = metadata
+                    logger.debug(f"Match found: {metadata['factor'].label}")
+                    # The mappings are priority-ordered, so if a match is found
+                    # we must break out of the loop to prevent the desired value
+                    # from being overwritten with a lower-priority one.
+                    break
+        else:
 
-            # Examine each unique sample match for a species factor column.
-            # The `matches` variable cannot be used again as it is a generator.
-            factors, samples = zip(*matches)
+            species_tuples = list(zip(*list(mapping.keys())))[0]
+            species = list(set(itertools.chain.from_iterable(species_tuples)))
+            matching_species = list(get_matching_species(species, group))
+            group_mapping[group] = {"species_data": [matching_species, ]}
 
-            # Check for the special case of a species column.
-            if g_unit_filter == ("Species",):
-
-                # Samples are duplicated as they are paired with factors.
-                # Ensure each sample is considered once by creating a set.
-                for sample in set(samples):
-
-                    # Create the species data for this sample.
-                    species_data = parse_species_factor_match(
-                        sample, group, experiment)
-
-                    # Create the uuid for the sample object, and add
-                    # it to the metadata dictionary.
-                    sample_node_uuid = create_uuid(sample)
-                    metadata[sample_node_uuid] = sample
-
-                    # The three metadata keys are stored in a tuple and
-                    # converted to a list with the same length of the csv data.
-                    metadata_keys = [(drupal_node_uuid, experiment_node_uuid,
-                                      sample_node_uuid)] * len(species_data)
-
-                    # Create the data frame from an intermediary dictionary
-                    # and append it to the group matches list.
-                    species_data_dict = {(g_label, "data"):     species_data,
-                                         (g_label, "metadata"): metadata_keys}
-                    df = pd.DataFrame(species_data_dict)
-                    group_matches.append(df)
-
-            # To ensure that we skip any groups that where handled above.
-            # if g_unit_filter != ("Species",):
-            else:
-
-                # Iterate through the sample factor pairs.
-                for factor, sample in zip(factors, samples):
-
-                    # Create the sample node uuid and add it to
-                    # the metadata dictionary.
-                    sample_node_uuid = create_uuid(sample)
-                    metadata[sample_node_uuid] = sample
-
-                    # Get the data array for this match.
-                    matching_data = parse_group_match(
-                        factor, sample, group, experiment)
-
-                    # Create the metadata key tuple with the same length
-                    # as the data.
-                    metadata_keys = [(drupal_node_uuid,
-                                      experiment_node_uuid,
-                                      sample_node_uuid)] * len(matching_data)
-
-                    # Convert the data to a pandas dataframe.
-                    df = pd.DataFrame({(g_label, "data"):     matching_data,
-                                       (g_label, "metadata"): metadata_keys})
-                    group_matches.append(df)
-
-        # Stack the created dataframes along the index axis, each matching
-        # group is returned in a pair of data, metadata columns.
-        group_df = pd.concat(group_matches, sort=False).reset_index(drop=True)
-        node_frames.append(group_df)
-
-    # Concatenate the group columns along the column axis.
-    main_df = pd.concat(node_frames, axis=1, sort=False)
-
-    return main_df, metadata
+    return group_mapping
 
 
-def prepare_sub_graphs(node: Node) -> List[Tuple]:
-    """Reformat each node into a series of graphs.
+def group_mapping_as_df(group_mapping):
+    data_dict = {}
+    metadata_dict = {}
 
-    # TODO: Refactor -- Move to the `Nodal.Experiment` class.
+    # grouping_dict = apply_transform(group_mapping)
 
-    Each of which should be centered on the Experiment Node
+    for group, grouping_dict in group_mapping.items():
 
-    :param node:
-    :return:
-    """
+        g_label, g_unit_filter, g_species_filter = group
 
-    sub_nodes = []
+        metadata_keys = []
 
-    # Create a new graph object.
-    for experiment in node.experiments:
+        for nodal in ("experiment", "sample", "source"):
+            try:
+                nodal_object = grouping_dict[nodal]
+                nodal_uuid = create_uuid(nodal_object)
+                metadata_dict[nodal_uuid] = nodal_object
+                metadata_keys.append(nodal_uuid)
+            except KeyError:
+                nodal_uuid = None
+                metadata_keys.append(nodal_uuid)
 
-        # Collapse species and factors from samples and their sources.
-        samples = experiment.samples + experiment.parental_samples
+        try:
+            factor_data = grouping_dict["factor_data"]
+            data_dict[("data", g_label)] = factor_data
+            metadata_keys = [tuple(metadata_keys), ] * len(factor_data)
+            data_dict[("metadata", g_label)] = metadata_keys
 
-        sample_factors = itertools.chain.from_iterable(
-            [util.get_all_elements(sample, "all_factors")
-             for sample in samples])
+        except KeyError:
+            data_dict[("data", g_label)] = grouping_dict["species_data"]
+            metadata_keys = [tuple(metadata_keys), ]
+            data_dict[("metadata", g_label)] = metadata_keys
 
-        factors = experiment.factors + experiment.parental_factors + list(sample_factors)
+    try:
+        factor_size = max(len(values) for values in data_dict.values())
+        for key, value in data_dict.items():
+            if len(value) == 1:
+                data_dict[key] = value * factor_size
+    except ValueError:
+        pass
 
-        # Extract the species from those samples.
-        species = itertools.chain.from_iterable(
-            [util.get_all_elements(sample, "all_species")
-             for sample in samples])
-
-        species_refs = collections.ChainMap(
-            {s.species_reference: s.stoichiometry
-             for s in species})
-
-        factor_map = collections.ChainMap(
-            {f.factor_type: {
-                f.reference_value: {
-                    f.unit_reference: f}}
-             for f in factors})
-
-        sub_nodes.append((species_refs, factor_map))
-
-    return sub_nodes
+    logger.debug(data_dict)
+    df = pd.DataFrame(data_dict)
+    # logger.debug(f"Columns: {df.columns}, shape: {df.shape}")
+    return df, metadata_dict

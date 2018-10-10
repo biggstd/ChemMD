@@ -5,10 +5,12 @@
 # ----------------------------------------------------------------------------
 # Imports for Testing
 # ----------------------------------------------------------------------------
+import logging
 
 from chemmd.models.core import Factor, SpeciesFactor, Comment
 from chemmd.models.nodal import Node, Sample, Source, Experiment
 
+logger = logging.getLogger(__name__)
 
 # ----------------------------------------------------------------------------
 # Test core model initialization.
@@ -19,7 +21,6 @@ def test_factor_creation(factor_kwargs):
         factor = Factor(**kwargs)
         assert factor.factor_type == kwargs["factor_type"]
         assert factor.label == (kwargs["factor_type"],
-                                kwargs.get("reference_value", None),
                                 kwargs.get("unit_reference"))
 
 
@@ -62,11 +63,9 @@ def test_drupal_node_creation(drupal_node_fixture_a):
 # ----------------------------------------------------------------------------
 # Test Experiment functions.
 # ----------------------------------------------------------------------------
-def test_build_factor_map(sipos_drupal_node, nmr_groups):
-    x_groups, y_groups = nmr_groups
-    groups = x_groups + y_groups
+def test_build_factor_map(sipos_drupal_node):
     experiments = sipos_drupal_node.experiments
-
     for exp in experiments:
-        map = exp.build_factor_map()
-
+        mapping = exp.species_factor_mapping(sipos_drupal_node)
+        if not mapping:
+            logger.debug(f"Failed to generated mapping for: {exp}")

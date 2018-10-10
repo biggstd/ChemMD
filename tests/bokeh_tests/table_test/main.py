@@ -12,39 +12,29 @@ import bokeh.models
 # ----------------------------------------------------------------------------
 # ChemMD imports
 # ----------------------------------------------------------------------------
-from src.chemmd import demos
-from src.chemmd import io
-from src.chemmd.display.views.generic_table import table_layout
+from chemmd.demos import loaders
+from chemmd import io
+from chemmd.display.views.generic_table import table_layout
 
 # ----------------------------------------------------------------------------
 # Test Fixtures.
 # ----------------------------------------------------------------------------
-NMR_GROUPS = dict(
-    x_groups=(('Total Aluminate Concentration', ('Molar',), ("Al",)),
-              ('Counter Ion Concentration', ('Molar',),
-               ("Na+", "Li+", "Cs+", "K+")),
-              ('Counter Ion', ('Species',), ("Na+", "Li+", "Cs+", "K+",)),
-              ('Base Concentration', ('Molar',), ("OH-",))),
-    y_groups=(('27 Al ppm', ('ppm',), ("Al",)),)
-)
+
 
 # Load the demo data from ChemMD.
-nmr_json_paths = [demos["SIPOS_NMR"], demos["SIPOS_NMR_2"]]
-
-nmr_nodes = io.create_nodes_from_files(nmr_json_paths)
+nmr_nodes = [loaders.node_demo_by_key("SIPOS_NMR"),]
 
 main_df, metadata_df, metadata_dict = io.prepare_nodes_for_bokeh(
-    NMR_GROUPS["x_groups"],
-    NMR_GROUPS["y_groups"],
+    loaders.NMR_GROUPS["x_groups"],
+    loaders.NMR_GROUPS["y_groups"],
     nmr_nodes)
-
 
 # ----------------------------------------------------------------------------
 # Table creation
 # ----------------------------------------------------------------------------
 table = table_layout(
-    NMR_GROUPS["x_groups"],
-    NMR_GROUPS["y_groups"],
+    loaders.NMR_GROUPS["x_groups"],
+    loaders.NMR_GROUPS["y_groups"],
     main_df,
     metadata_df,
     metadata_dict)

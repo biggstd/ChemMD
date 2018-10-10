@@ -171,7 +171,7 @@ def ernesto_nmr():
 
 @pytest.fixture
 def nmr_groups():
-    x_groups = (('Total Aluminate Concentration', 'Molar', ("Al*",)),
+    x_groups = (('Total Aluminate Concentration', 'Molar', ("Al",)),
                 ('Counter Ion Concentration', 'Molar', ("Na+", "Li+", "Cs+", "K+")),
                 ('Counter Ion', ('Species',), ("Na+", "Li+", "Cs+", "K+",)),
                 ('Base Concentration', 'Molar', ("OH-",)))

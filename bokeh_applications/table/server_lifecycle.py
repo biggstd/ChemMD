@@ -6,7 +6,7 @@ import os
 import time
 import shutil
 import logging
-from src.chemmd import config
+from chemmd import config
 
 
 # ----------------------------------------------------------------------------

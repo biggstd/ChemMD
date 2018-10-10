@@ -11,6 +11,15 @@ JSON_DEMOS = {
     "ERNESTO_NMR_1": "ernesto_nmr_1.json"
 }
 
+NMR_GROUPS = dict(
+    x_groups=(('Total Aluminate Concentration', ('Molar',), ("Al",)),
+              ('Counter Ion Concentration', ('Molar',),
+               ("Na+", "Li+", "Cs+", "K+")),
+              ('Counter Ion', ('Species',), ("Na+", "Li+", "Cs+", "K+",)),
+              ('Base Concentration', ('Molar',), ("OH-",))),
+    y_groups=(('27 Al ppm', ('ppm',), ("Al",)),)
+)
+
 
 def json_demo_path(file):
     # Get the directory of this Python file.
