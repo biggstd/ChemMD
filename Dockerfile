@@ -33,7 +33,8 @@ RUN chmod +x /opt/ChemMD/scripts/*.sh
 # ENV BOKEH_RESOURCES=inline
 
 # Copy the configuration folder.
-COPY ./md_config/ /md_config/
+RUN mkdir /md_config/
+COPY ./src/chemmd/md_config/config.json /md_config/config.json
 
 # Setup isadream data environment variable.
 # See the `config.json` file in the `md_config` directory
