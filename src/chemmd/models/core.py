@@ -21,7 +21,6 @@ from . import util
 # Elemental Class Definitions
 # ----------------------------------------------------------------------------
 
-
 class Factor(param.Parameterized):
     """The factor is the fundamental storage model for an observation.
 
@@ -261,3 +260,5 @@ class DerivedGroup(param.Parameterized):
     @property
     def group(self) -> DerivedGroupType:
         return self.column_name, self.source_names, self.callable_
+
+ElementalTypes = Union[Factor, SpeciesFactor, Comment, DataFile]

@@ -5,6 +5,7 @@
 # ----------------------------------------------------------------------------
 # General Imports
 # ----------------------------------------------------------------------------
+import chemmd.io.input
 import pytest
 
 # ----------------------------------------------------------------------------
@@ -12,7 +13,6 @@ import pytest
 # ----------------------------------------------------------------------------
 from chemmd.demos import loaders
 
-from chemmd import io
 from chemmd.models.core import Factor, SpeciesFactor, Comment
 from chemmd.models.nodal import Source, Sample, Experiment, Node
 
@@ -150,19 +150,19 @@ def sipos_drupal_node():
 @pytest.fixture
 def sipos_nmr_json():
     path = loaders.json_demo_path(loaders.JSON_DEMOS["SIPOS_NMR"])
-    return io.read_idream_json(path)
+    return chemmd.io.input.read_idream_json(path)
 
 
 @pytest.fixture
 def sipos_nmr2_json():
     path = loaders.json_demo_path(loaders.JSON_DEMOS["SIPOS_NMR_2"])
-    return io.read_idream_json(path)
+    return chemmd.io.input.read_idream_json(path)
 
 
 @pytest.fixture
 def ernesto_nmr():
     path = loaders.json_demo_path(loaders.JSON_DEMOS["ERNESTO_NMR_1"])
-    return io.read_idream_json(path)
+    return chemmd.io.input.read_idream_json(path)
 
 
 # ----------------------------------------------------------------------------

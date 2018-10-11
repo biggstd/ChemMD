@@ -9,13 +9,10 @@ of the two.
 # Imports
 # ----------------------------------------------------------------------------
 import logging
-import itertools
-import collections
-import pprint
 import uuid
-import re
+
+import chemmd.io.input
 import numpy as np
-import pandas as pd
 import param  # Boiler-plate for controlled class attributes.
 from textwrap import dedent  # Prevent indents from percolating to the user.
 from typing import Union, List
@@ -25,8 +22,6 @@ from typing import Union, List
 # ----------------------------------------------------------------------------
 
 from . import util
-from .. import io
-from ..transforms import INDEPENDENT_TRANSFORMS
 
 logger = logging.getLogger(__name__)
 
@@ -202,7 +197,7 @@ class Experiment(param.Parameterized):
         return str(uuid.uuid3(uuid.NAMESPACE_DNS, str(self)))
 
     def parse_factor_value(self, factor):
-        csv_data_dict = io.load_csv_as_dict(self.datafile)
+        csv_data_dict = chemmd.io.input.load_csv_as_dict(self.datafile)
         factor_size = max(len(values) for values in csv_data_dict.values())
 
         if factor.is_csv_index:

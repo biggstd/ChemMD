@@ -12,8 +12,9 @@ import bokeh.models
 # ----------------------------------------------------------------------------
 # ChemMD imports
 # ----------------------------------------------------------------------------
+import chemmd.models
+import chemmd.io.output
 from chemmd.demos import loaders
-from chemmd import io
 from chemmd.display.views.generic_table import table_layout
 
 # ----------------------------------------------------------------------------
@@ -24,7 +25,7 @@ from chemmd.display.views.generic_table import table_layout
 # Load the demo data from ChemMD.
 nmr_nodes = [loaders.node_demo_by_key("SIPOS_NMR"),]
 
-main_df, metadata_df, metadata_dict = io.prepare_nodes_for_bokeh(
+main_df, metadata_df, metadata_dict = chemmd.io.output.prepare_nodes_for_bokeh(
     loaders.NMR_GROUPS["x_groups"],
     loaders.NMR_GROUPS["y_groups"],
     nmr_nodes)
