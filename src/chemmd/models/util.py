@@ -8,6 +8,7 @@
 
 # Generic Python imports.
 import itertools
+import uuid
 from typing import Any, List
 
 
@@ -67,3 +68,13 @@ def get_all_elements(node,
             element_list.extend(itertools.chain.from_iterable(children_elements))
 
     return element_list
+
+
+def create_uuid(metadata_node):
+    """Create a uuid to label a metadata node.
+
+    uuid.uuid3() generates a universally unique identifier based
+    on a given namespace dns and a string. This is done so that
+    the same node objects return the same uuid.
+    """
+    return str(uuid.uuid3(uuid.NAMESPACE_DNS, str(metadata_node)))

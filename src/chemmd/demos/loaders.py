@@ -2,6 +2,9 @@
 
 """
 import os
+
+import chemmd.io.input
+
 from .. import io
 
 
@@ -32,7 +35,7 @@ def json_demo_path(file):
 
 def node_demo_by_key(key):
     path = json_demo_path(JSON_DEMOS[key])
-    return io.node_from_path(path)
+    return chemmd.io.input.node_from_path(path)
 
 
 def load_demo_nodes():

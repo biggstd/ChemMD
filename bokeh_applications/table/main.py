@@ -12,6 +12,8 @@ import bokeh.models
 # ----------------------------------------------------------------------------
 # ChemMD imports
 # ----------------------------------------------------------------------------
+import chemmd.io.input
+import chemmd.io.output
 from chemmd import io
 from chemmd.display import helpers
 from chemmd.display.views.generic_table import table_layout
@@ -29,10 +31,10 @@ try:
     groups = helpers.get_session_groups(bk.io.curdoc())
 
     # Create the ChemMD data model objects.
-    nodes = io.create_nodes_from_files(json_file_paths)
+    nodes = chemmd.io.input.create_nodes_from_files(json_file_paths)
 
     # Prepare those created nodes for Bokeh.
-    main_df, metadata_df, metadata_dict = io.prepare_nodes_for_bokeh(
+    main_df, metadata_df, metadata_dict = chemmd.io.output.prepare_nodes_for_bokeh(
         groups["x_groups"],
         groups["y_groups"],
         nodes)

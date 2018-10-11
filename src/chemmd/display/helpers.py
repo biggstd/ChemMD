@@ -33,7 +33,8 @@ import markdown
 
 # Local project imports.
 from .. import config
-from .. import io
+from ..io import input
+from ..io import output
 from ..models.core import DerivedGroupType, GroupTypes, QueryGroupType
 
 # ----------------------------------------------------------------------------
@@ -122,11 +123,11 @@ def load_session_data(x_groups: QueryGroupType,
     json_paths = get_session_json_paths(current_document)
 
     # Build Node models from each of the found json files.
-    nodes = io.create_nodes_from_files(json_paths)
+    nodes = chemmd.io.input.create_nodes_from_files(json_paths)
 
     # Combine these nodes into a single set of data and metadata
     # based on the user-supplied query groups.
-    data, data_metadata, cds_metadata = io.prepare_nodes_for_bokeh(
+    data, data_metadata, cds_metadata = chemmd.io.output.prepare_nodes_for_bokeh(
         x_groups=x_groups, y_groups=y_groups, nodes=nodes)
 
     # Build a Bokeh column data source object.
