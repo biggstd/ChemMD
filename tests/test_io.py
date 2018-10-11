@@ -6,9 +6,9 @@
 # Imports for Testing
 # ----------------------------------------------------------------------------
 import logging
+import pandas as pd
 
 import chemmd.io.output
-from chemmd import io
 from chemmd.models.nodal import Node
 
 logger = logging.getLogger(__name__)
@@ -26,8 +26,7 @@ def test_export_by_groups(sipos_drupal_node, nmr_groups):
 
     for exp in sipos_drupal_node.experiments:
         mapping = exp.species_factor_mapping(sipos_drupal_node)
-        # print(mapping)
         group_mapping = chemmd.io.output.create_group_mapping(mapping, groups)
         df, metadata = chemmd.io.output.group_mapping_as_df(group_mapping)
-        # logger.debug(df.columns)
-        # logger.debug(metadata.keys())
+        assert isinstance(df, pd.DataFrame)
+        assert isinstance(metadata, dict)

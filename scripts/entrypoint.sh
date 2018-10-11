@@ -19,7 +19,9 @@ if [ "$CHEMMD_CONFIG" == "TESTING" ]; then
       --address 0.0.0.0\
       --log-level debug\
       --allow-websocket-origin localhost:8001\
-      /tests/bokeh_tests/table_test
+        tests/bokeh_tests/table_test \
+        tests/bokeh_tests/scatter_test \
+        tests/bokeh_testes/scatter_table_combo_test
 else
     echo "Starting production Bokeh server..."
     bokeh serve\

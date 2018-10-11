@@ -11,13 +11,17 @@ with the use of ``query groups``.
 
 
 """
-from typing import Union
 
-from ..models.core import Factor, SpeciesFactor, Comment, DataFile
-
+# ----------------------------------------------------------------------------
+# Imports for API use.
 #
-# from .input import (
-#     create_nodes_from_files,
-#     node_from_path
-# )
+# These functions will be available as `chemmd.io.func`.
+# ----------------------------------------------------------------------------
+from .input import (read_idream_json,
+                    load_csv_as_dict,
+                    create_nodes_from_files,
+                    node_from_path)
 
+from .output import (prepare_nodes_for_bokeh,
+                     create_group_mapping,
+                     group_mapping_as_df)
