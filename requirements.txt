@@ -4,3 +4,4 @@ param
 pytest
 numpy
 markdown
+jsonschema

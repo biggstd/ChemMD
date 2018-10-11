@@ -24,6 +24,7 @@ for analysis and visualization.*
 + [x] Better code integration.
 + [x] Complete tests setup for `ChemMD`.
 + [x] Repair `io` functions.
++ [ ] Update `bokeh` tests.
 + [ ] Sphinx documentation setup.
 + [ ] Add a license.
 + [ ] Bettercode recommendations and re-factors..

@@ -1,12 +1,9 @@
 """Core Metadata and Group Models
 
 """
-# TODO: Refactor query methods of elemental classes.
-
 # ----------------------------------------------------------------------------
 # Imports
 # ----------------------------------------------------------------------------
-
 # Standard Python modules.
 import re  # Regular expression functions.
 from textwrap import dedent  # Prevent indents from percolating to the user.
@@ -17,10 +14,10 @@ import param  # Boiler-plate for controlled class attributes.
 # Local project imports.
 from . import util
 
+
 # ----------------------------------------------------------------------------
 # Elemental Class Definitions
 # ----------------------------------------------------------------------------
-
 class Factor(param.Parameterized):
     """The factor is the fundamental storage model for an observation.
 
@@ -38,47 +35,31 @@ class Factor(param.Parameterized):
 
     factor_type = param.String(
         allow_None=False,
-        doc=dedent("""A factor type is the outermost ontology group.
-        """)
-    )
+        doc=dedent("""A factor type is the outermost ontology group. """))
 
     decimal_value = param.Number(
-        allow_None=True,
-        default=None,
-        doc=dedent("""The decimal value of this factor.
-        """)
-    )
+        allow_None=True, default=None,
+        doc=dedent("""The decimal value of this factor. """))
 
     string_value = param.String(
         allow_None=True,
         doc=dedent("""The string value of this factor. This should be 
-        used only if no other value field will work for the data.
-        """)
-    )
+        used only if no other value field will work for the data. """))
 
     reference_value = param.String(
-        allow_None=True,
-        default=None,
+        allow_None=True, default=None,
         doc=dedent("""A reference value of this factor. This should 
         be used when The value of this factor has a discreet set of 
-        possible values.
-        """)
-    )
+        possible values."""))
 
     unit_reference = param.String(
-        allow_None=True,  # Some string or factor values may not have units.
-        default=None,
-        doc=dedent("""The unit that describes this factor.
-        """)
-    )
+        allow_None=True, default=None,
+        doc=dedent("""The unit that describes this factor."""))
 
     csv_column_index = param.Integer(
-        allow_None=True,
-        default=None,
+        allow_None=True, default=None,
         doc=dedent("""An integer reference that points to the column index
-        of the data that this factor describes.
-        """)
-    )
+        of the data that this factor describes."""))
 
     @property
     def label(self) -> Tuple[str, ...]:
@@ -154,16 +135,13 @@ class SpeciesFactor(param.Parameterized):
 
     species_reference = param.String(
         allow_None=False,
-        doc=dedent("""The species being referenced.
-        """)
-    )
+        doc=dedent("""The species being referenced. """))
 
     stoichiometry = param.Number(
         allow_None=False,
         default=1.0,
         doc=dedent("""The coefficient corresponding to this species factor.
-        """)
-    )
+        """))
 
     def query(self, query_term) -> bool:
         """A boolean search function. Returns True if the query term
@@ -187,15 +165,11 @@ class Comment(param.Parameterized):
 
     comment_title = param.String(
         allow_None=False,  # There must at least be a comment name.
-        doc=dedent("""The title of a comment.
-        """)
-    )
+        doc=dedent("""The title of a comment."""))
 
     comment_body = param.String(
         allow_None=Factor,
-        doc=dedent("""The body text of a comment.
-        """)
-    )
+        doc=dedent("""The body text of a comment. """))
 
     @property
     def as_markdown(self):
@@ -260,5 +234,6 @@ class DerivedGroup(param.Parameterized):
     @property
     def group(self) -> DerivedGroupType:
         return self.column_name, self.source_names, self.callable_
+
 
 ElementalTypes = Union[Factor, SpeciesFactor, Comment, DataFile]

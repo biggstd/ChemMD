@@ -14,10 +14,9 @@ import bokeh.models
 # ----------------------------------------------------------------------------
 import chemmd.io.input
 import chemmd.io.output
-from src.chemmd import io
-from src.chemmd.display import helpers
-from src.chemmd.display.views.generic_table import table_layout
-from src.chemmd.display.views import scatter_layout
+from chemmd.display import helpers
+from chemmd.display.views.generic_table import table_layout
+from chemmd.display.views.generic_cross_filter_scatter import scatter_layout
 
 
 # ----------------------------------------------------------------------------

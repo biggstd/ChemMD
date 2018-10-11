@@ -20,7 +20,6 @@ from typing import Union, List
 # ----------------------------------------------------------------------------
 # Local project imports.
 # ----------------------------------------------------------------------------
-
 from . import util
 
 logger = logging.getLogger(__name__)
@@ -44,42 +43,31 @@ class Node(param.Parameterized):
     # )
 
     node_information = param.Dict(
-        allow_None=True,
-        default=None,
+        allow_None=True, default=None,
         doc=dedent("""A set of key-value pairs of information concerning 
         this experiment. 
         
-        This can be any arbitrary set of key-value paris.
-        """)
-    )
+        This can be any arbitrary set of key-value paris."""))
 
     experiments = param.List(
         allow_None=True,
         doc=dedent("""A list of Assay models that contain all core 
-        data components.
-        """)
-    )
+        data components."""))
 
     factors = param.List(
         allow_None=True,
         doc=dedent("""A list of Factor models that pertain to all 
-        assays contained by this Node instance.
-        """)
-    )
+        assays contained by this Node instance. """))
 
     samples = param.List(
         allow_None=True,
         doc=dedent("""A list of Sample models that are used by all assays 
-        contained by this Node instance.
-        """)
-    )
+        contained by this Node instance. """))
 
     comments = param.List(
         allow_None=True,
         doc=dedent(""" A list of Comment models that apply to all of the 
-        assays contained by this Node instance.
-        """)
-    )
+        assays contained by this Node instance. """))
 
     def mapping(self):
         mapping = {"node": self}
@@ -141,56 +129,49 @@ class Experiment(param.Parameterized):
         instance models.
         
         The base-path of where this file is actually stored is not 
-        considered here.
-        """)
-    )
+        considered here."""))
 
     experiment_name = param.String(
         allow_None=False,
-        doc=dedent("""The user-supplied title of this assay. """))
+        doc=dedent("""The user-supplied title of this assay."""))
 
     factors = param.List(
         allow_None=True,
-        doc=dedent("""A list of Factor objects that apply to this assay. """))
+        doc=dedent("""A list of Factor objects that apply to this assay."""))
 
     samples = param.List(
         allow_None=True,
         doc=dedent("""A list of Sample objects that are used within 
-        this assay.
-        """))
+        this assay."""))
 
     comments = param.List(
         allow_None=True,
         doc=dedent(
-            """A list of Comment objects that describe this assay. """))
+            """A list of Comment objects that describe this assay."""))
 
     parental_factors = param.List(
         allow_None=True,
         doc=dedent("""A list of Factor objects from the parent Node
         of this assay.
         
-        All of these factors apply to this assay.
-        """))
+        All of these factors apply to this assay."""))
 
     parental_samples = param.List(
         allow_None=True,
         doc=dedent("""A list of Sample objects from the parent Node 
         of this assay.
         
-        All of these Samples are used by this assay.
-        """))
+        All of these Samples are used by this assay."""))
 
     parental_info = param.Dict(
         allow_None=True,
         doc=dedent("""The metadata information of the parent Node
-        of this assay.
-        """))
+        of this assay."""))
 
     parental_comments = param.List(
         allow_None=True,
         doc=dedent("""A list of comments from the parent Node 
-        of this assay.
-        """))
+        of this assay."""))
 
     @property
     def metadata_uuid(self):
@@ -202,7 +183,6 @@ class Experiment(param.Parameterized):
 
         if factor.is_csv_index:
             data = np.array(csv_data_dict[str(factor.csv_column_index)])
-            # logger.debug(f"Found data for {pprint.pformat(factor)}:\n {data}")
             return data
         elif factor.value:
             return [factor.value, ] * factor_size
@@ -211,8 +191,6 @@ class Experiment(param.Parameterized):
     # ChainMap creation functions.
     # -------------------------------------------------------------------------
     def species_factor_mapping(self, parent_node):
-
-        # logger.debug(f"Generating mapping for {self}")
 
         source_mapping = {}
         sample_mapping = {}
@@ -229,34 +207,27 @@ class Experiment(param.Parameterized):
                 source_maps = source.mapping()
                 logger.debug(source_maps)
                 for source_map in source_maps.values():
-                    # logger.debug(source_map)
                     source_map["factor_data"] = self.parse_factor_value(source_map["factor"])
                     source_map["sample"] = sample
                     source_map["experiment"] = self
                     source_map["parent_node"] = parent_node
-                # logger.debug(f"source map: {source_maps}")
 
                 source_mapping = {**source_maps, **source_mapping}
 
             sample_maps = sample.mapping(factors)
 
             for sample_map in sample_maps.values():
-                # logger.debug(sample_map)
                 sample_map["factor_data"] = self.parse_factor_value(sample_map["factor"])
                 sample_map["experiment"] = self
                 sample_map["parent_node"] = parent_node
 
             sample_mapping = {**sample_maps, **sample_mapping}
 
-        # logger.debug(f"sample map: {sample_maps}")
-
         mapping = {**source_mapping, **sample_mapping}
-        # logger.debug(f"From {self}, Created mapping: {pprint.pformat(mapping)}")
         return mapping
 
     @property
     def as_markdown(self):
-        # TODO: Examine function for completeness.
         text = f"### {self.assay_title}\n"
         for sample in self.samples:
             text += sample.as_markdown
@@ -279,22 +250,16 @@ class Sample(param.Parameterized):
 
     sample_name = param.String(
         allow_None=False,
-        doc=dedent("""The user supplied name of this sample.
-        """)
-    )
+        doc=dedent("""The user supplied name of this sample."""))
 
     factors = param.List(
         allow_None=True,
-        doc=dedent("""Factors that apply to only to this sample.
-        """)
-    )
+        doc=dedent("""Factors that apply to only to this sample."""))
 
     species = param.List(
         allow_None=False,  # There must at least be a reference.
         doc=dedent("""A list of species that are contained within this 
-        source.
-        """)
-    )
+        source."""))
 
     sources = param.List(
         allow_None=True,
@@ -304,14 +269,12 @@ class Sample(param.Parameterized):
         If supplied, factors and species from sources will apply to
         this assay instance as well. If matching factors are found,
         the highest ranking source or sample factor will take precedence.
-        """)
-    )
+        """))
 
     comments = param.List(
         allow_None=True,
         doc=dedent("""A list of comment objects that pertain to this sample.
-        """)
-    )
+        """))
 
     @property
     def all_factors(self) -> List:
@@ -345,7 +308,9 @@ class Sample(param.Parameterized):
                        for s in species}
         return species_map
 
-    def mapping(self, applied_factors=[]):
+    def mapping(self, applied_factors=None):
+        if applied_factors is None:
+            applied_factors = []
         factors = applied_factors + util.get_all_elements(self, "all_factors")
         mapping = {}
         species_map = self.species_map()
@@ -405,27 +370,22 @@ class Source(param.Parameterized):
 
     source_name = param.String(
         allow_None=False,
-        doc=dedent("""User given name of this source.
-        """)
-    )
+        doc=dedent("""User given name of this source. """))
 
     species = param.List(
         allow_None=False,
         doc=dedent("""A list of species objects that this source models.
-        """)
-    )
+        """))
 
     factors = param.List(
         allow_None=True,
         doc=dedent("""A list of factor objects that describe this source.
-        """)
-    )
+        """))
 
     comments = param.List(
         allow_None=True,
         doc=dedent("""A list of comment objects that describe this source.
-        """)
-    )
+        """))
 
     @property
     def all_factors(self) -> List:
@@ -454,7 +414,9 @@ class Source(param.Parameterized):
                        for s in species}
         return species_map
 
-    def mapping(self, applied_factors=[]):
+    def mapping(self, applied_factors=None):
+        if applied_factors is None:
+            applied_factors = []
         factors = applied_factors + util.get_all_elements(self, "all_factors")
         mapping = {}
         species_map = self.species_map()

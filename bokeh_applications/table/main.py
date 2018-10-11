@@ -14,7 +14,6 @@ import bokeh.models
 # ----------------------------------------------------------------------------
 import chemmd.io.input
 import chemmd.io.output
-from chemmd import io
 from chemmd.display import helpers
 from chemmd.display.views.generic_table import table_layout
 

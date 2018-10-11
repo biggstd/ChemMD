@@ -3,9 +3,7 @@
 """
 import os
 
-import chemmd.io.input
-
-from .. import io
+from ..io.input import node_from_path
 
 
 JSON_DEMOS = {
@@ -13,6 +11,7 @@ JSON_DEMOS = {
     "SIPOS_NMR_2": "sipos_2006_nmr_2.json",
     "ERNESTO_NMR_1": "ernesto_nmr_1.json"
 }
+demo_keys = tuple(JSON_DEMOS.keys())
 
 NMR_GROUPS = dict(
     x_groups=(('Total Aluminate Concentration', ('Molar',), ("Al",)),
@@ -35,7 +34,7 @@ def json_demo_path(file):
 
 def node_demo_by_key(key):
     path = json_demo_path(JSON_DEMOS[key])
-    return chemmd.io.input.node_from_path(path)
+    return node_from_path(path)
 
 
 def load_demo_nodes():
