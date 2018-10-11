@@ -32,15 +32,11 @@ RUN chmod +x /opt/ChemMD/scripts/*.sh
 # CDN server for bokeh resources does not work.
 # ENV BOKEH_RESOURCES=inline
 
-# Copy the configuration folder.
-RUN mkdir /md_config/
-COPY ./src/chemmd/md_config/config.json /md_config/config.json
-
 # Setup isadream data environment variable.
 # See the `config.json` file in the `md_config` directory
 # for the declaration of these options.
-ENV CHEMMD_CONFIG_PATH="/md_config/config.json"
-#ENV CHEMMD_CONFIG=DEFAULT
+ENV CHEMMD_CONFIG_PATH="/opt/ChemMD/src/chemmd/config.json"
+ENV CHEMMD_CONFIG=DEFAULT
 
 # Copy the Bokeh applications to the container.
 COPY ./bokeh_applications/scatter /opt/bkapps/scatter
