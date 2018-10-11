@@ -11,7 +11,7 @@ for analysis and visualization.*
 
 + [ ] Complete query group setup on Drupal.
     *These should be content types that the user selects.*
-+ [ ] Fix UI on experiment creation on Drupal.
++ [x] Fix UI on experiment creation on Drupal.
 + [x] DockerHub integration.
 + [x] Travis CI integration.
 + [x] Complete `ChemMD` repository setup.
@@ -23,7 +23,7 @@ for analysis and visualization.*
     + [ ] Convert download to generic, only works in one case now.
 + [x] Better code integration.
 + [x] Complete tests setup for `ChemMD`.
-+ [ ] Repair `io` functions.
++ [x] Repair `io` functions.
 + [ ] Sphinx documentation setup.
 + [ ] Add a license.
 + [ ] Bettercode recommendations and re-factors..
