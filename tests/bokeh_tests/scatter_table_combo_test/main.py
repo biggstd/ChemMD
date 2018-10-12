@@ -53,12 +53,13 @@ scatter = scatter_layout(
     metadata_df,
     metadata_dict)
 
-scatter_panel = bk.models.Panel(child=table, title="Scatter")
+scatter_panel = bk.models.Panel(child=scatter, title="Scatter")
 
 
 # ----------------------------------------------------------------------------
 # Tab creation
 # ----------------------------------------------------------------------------
 tabs = bk.models.widgets.Tabs(tabs=[table_panel, scatter_panel])
+
 # Add the created tabs to the current document.
 bk.io.curdoc().add_root(tabs)

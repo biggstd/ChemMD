@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------------
 import bokeh as bk
 import bokeh.io
+import bokeh.plotting
 import bokeh.models
 
 
@@ -15,7 +16,6 @@ import bokeh.models
 # ----------------------------------------------------------------------------
 import chemmd.io
 from chemmd.demos import loaders
-from chemmd.display.views.generic_cross_filter_scatter import scatter_layout
 
 
 # ----------------------------------------------------------------------------
@@ -29,24 +29,27 @@ main_df, metadata_df, metadata_dict = chemmd.io.prepare_nodes_for_bokeh(
     loaders.NMR_GROUPS["y_groups"],
     nmr_nodes)
 
-
-# ----------------------------------------------------------------------------
-# Scatter plot creation
-# ----------------------------------------------------------------------------
-scatter = scatter_layout(
-    loaders.NMR_GROUPS["x_groups"],
-    loaders.NMR_GROUPS["y_groups"],
-    main_df,
-    metadata_df,
-    metadata_dict)
-
-scatter_panel = bk.models.Panel(child=scatter, title="Scatter")
+source = bk.models.ColumnDataSource(main_df)
 
 
-# ----------------------------------------------------------------------------
-# Tab creation
-# ----------------------------------------------------------------------------
-tabs = bk.models.widgets.Tabs(tabs=[scatter_panel, ])
+def build_figure() -> bk.plotting.Figure:
+    """
 
-# Add the created tabs to the current document.
-bk.io.curdoc().add_root(tabs)
+    :return:
+    """
+    # Create the basic figure object.
+    figure = bk.plotting.Figure(name="scatter_panel_figure",
+                                plot_width=600,
+                                plot_height=600)
+
+    # Draw circles (corresponding to data) on the figure.
+    figure.circle(
+        source=source,
+        x=loaders.NMR_GROUPS["x_groups"][0][0],
+        y=loaders.NMR_GROUPS["y_groups"][0][0]
+    )
+
+    return figure
+
+
+bk.io.curdoc().add_root(build_figure())

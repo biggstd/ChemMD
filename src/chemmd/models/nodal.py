@@ -205,7 +205,6 @@ class Experiment(param.Parameterized):
             for source in sources:
 
                 source_maps = source.mapping()
-                logger.debug(source_maps)
                 for source_map in source_maps.values():
                     source_map["factor_data"] = self.parse_factor_value(source_map["factor"])
                     source_map["sample"] = sample

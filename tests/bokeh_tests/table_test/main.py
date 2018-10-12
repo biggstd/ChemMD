@@ -9,12 +9,14 @@ import bokeh as bk
 import bokeh.io
 import bokeh.models
 
+
 # ----------------------------------------------------------------------------
 # ChemMD imports
 # ----------------------------------------------------------------------------
 import chemmd.io.output
 from chemmd.demos import loaders
 from chemmd.display.views.generic_table import table_layout
+
 
 # ----------------------------------------------------------------------------
 # Test Fixtures.

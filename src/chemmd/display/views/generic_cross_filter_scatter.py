@@ -5,6 +5,7 @@
 # ----------------------------------------------------------------------------
 # Standard and data science imports
 # ----------------------------------------------------------------------------
+import logging
 
 # ----------------------------------------------------------------------------
 # Bokeh imports
@@ -19,11 +20,12 @@ import pandas as pd
 # ISADream imports
 # ----------------------------------------------------------------------------
 from .. import helpers
-from ...models.core import GroupTypes
+from ...models import GroupTypes
 
 # ----------------------------------------------------------------------------
-# Global style definitions.
+# Global definitions.
 # ----------------------------------------------------------------------------
+logger = logging.getLogger(__name__)
 TITLE = "Scatter Plot"
 
 
@@ -31,10 +33,10 @@ TITLE = "Scatter Plot"
 # Bokeh Layout Definition
 # ----------------------------------------------------------------------------
 def scatter_layout(x_groups: GroupTypes,
-                  y_groups: GroupTypes,
-                  main_df: pd.DataFrame,
-                  metadata_df: pd.DataFrame,
-                  metadata: dict) -> bk.models.Panel:
+                   y_groups: GroupTypes,
+                   main_df: pd.DataFrame,
+                   metadata_df: pd.DataFrame,
+                   metadata: dict) -> bk.models.Panel:
     """
 
     :param x_groups:
@@ -75,6 +77,7 @@ def scatter_layout(x_groups: GroupTypes,
     controls = helpers.build_selection_controls(source, x_groups, y_groups)
 
     def controller_callback(attr, old, new):
+        logger.debug(f"Scatter callback activated: {attr}, {old}, {new}")
         # Get the parent layout that contains the main figure.
         curr_layout = bk.plotting.curdoc().get_model_by_name('main_figure')
         # Replace the current child with an updated figure.
@@ -128,6 +131,9 @@ def scatter_layout(x_groups: GroupTypes,
         # Add tools for interactivity to the figure.
         figure.add_tools(bk.models.TapTool())  # Required for selections.
 
+        logger.info(f"""Bokeh scatter figure created.
+        x: {controls["x_axis"].value}
+        y: {controls["y_axis"].value}""")
         return figure
 
     # ------------------------------------------------------------------------

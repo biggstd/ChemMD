@@ -26,7 +26,7 @@ import pandas as pd
 # Local project imports
 # ----------------------------------------------------------------------------
 from .. import helpers
-from ...models.core import GroupTypes
+from ...models import GroupTypes
 
 # ----------------------------------------------------------------------------
 # Global style definitions.

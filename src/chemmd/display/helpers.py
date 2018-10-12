@@ -33,9 +33,8 @@ import markdown
 
 # Local project imports.
 from .. import config
-from ..io import input
-from ..io import output
-from ..models.core import DerivedGroupType, GroupTypes, QueryGroupType
+from .. import io
+from ..models import DerivedGroup, QueryGroup, GroupTypes
 
 # ----------------------------------------------------------------------------
 # Globals and constants
@@ -104,11 +103,12 @@ def get_session_groups(current_document: bk.document.Document,
     with open(group_file, "r") as file:
         data = json.load(file)
 
+    logger.info(f"Session groups found at: {group_file}")
     return data
 
 
-def load_session_data(x_groups: QueryGroupType,
-                      y_groups: QueryGroupType,
+def load_session_data(x_groups: QueryGroup,
+                      y_groups: QueryGroup,
                       current_document: bk.document.Document
                       ) -> Tuple[bk.models.ColumnDataSource,
                                  pd.DataFrame,
@@ -123,16 +123,17 @@ def load_session_data(x_groups: QueryGroupType,
     json_paths = get_session_json_paths(current_document)
 
     # Build Node models from each of the found json files.
-    nodes = chemmd.io.input.create_nodes_from_files(json_paths)
+    nodes = io.create_nodes_from_files(json_paths)
 
     # Combine these nodes into a single set of data and metadata
     # based on the user-supplied query groups.
-    data, data_metadata, cds_metadata = chemmd.io.output.prepare_nodes_for_bokeh(
+    data, data_metadata, cds_metadata = io.prepare_nodes_for_bokeh(
         x_groups=x_groups, y_groups=y_groups, nodes=nodes)
 
     # Build a Bokeh column data source object.
     source = bk.models.ColumnDataSource(data)
 
+    logger.info(f"Session data loaded from: {json_paths}")
     return source, data_metadata, cds_metadata
 
 
@@ -142,8 +143,8 @@ def load_session_data(x_groups: QueryGroupType,
 
 
 def categorize_columns(data_frame: pd.DataFrame,
-                       x_groups: QueryGroupType,
-                       y_groups: QueryGroupType
+                       x_groups: QueryGroup,
+                       y_groups: QueryGroup
                        ) -> dict:
     """Helper function for categorizing user-group defined columns.
 
@@ -185,6 +186,7 @@ def categorize_columns(data_frame: pd.DataFrame,
                     if len(data_frame[x].unique()) < 10
                     and x in x_keys]
 
+    logger.info(f"Columns categorized: {columns}")
     return dict(columns=columns,
                 discrete=discrete,
                 continuous=continuous,
@@ -201,8 +203,8 @@ def get_group_keys(group):
 
 
 def create_derived_column(data_frame: pd.DataFrame,
-                           derived_group: DerivedGroupType
-                           ) -> pd.DataFrame:
+                          derived_group: DerivedGroup
+                          ) -> pd.DataFrame:
     """Calculate a column based on those already present in the data frame.
 
     :param data_frame:
@@ -218,6 +220,8 @@ def create_derived_column(data_frame: pd.DataFrame,
     # Apply the calculation with the precursor columns, and save the
     # result to the given data frame.
     data_frame[new_column] = group_function(*precursor_columns)
+
+    logger.info(f"Derived column created: {new_column}")
 
     return data_frame
 
@@ -300,6 +304,7 @@ def build_selection_controls(bokeh_source: bk.models.ColumnDataSource,
             options=["None"] + column_groups["continuous"])
         selection_controls["size"] = size
 
+    logger.info(f"Constructed selection controls: {selection_controls.keys()}")
     return selection_controls
 
 
@@ -320,10 +325,12 @@ def create_colors(bokeh_source: bk.models.ColumnDataSource,
             factors=unique_factors,
             palette=palette[len(unique_factors)])
 
+        logger.debug(f"Color map generated for {color_column}")
         return {"field": color_column, "transform": color_mapper}
 
     else:
         # Return a default color.
+        logger.debug(f"Default color returned.")
         return "#31AADE"
 
 
@@ -341,8 +348,10 @@ def create_sizes(bokeh_source: bk.models.ColumnDataSource,
             x=[min(bokeh_source.data[size_column]),
                max(bokeh_source.data[size_column])],
             y=[3, 15])
+        logger.debug(f"Size map generated for {size_column}")
         return dict(field=size_column, transform=size_scale)
     else:
+        logger.debug(f"Default size returned.")
         return 7
 
 
@@ -376,13 +385,13 @@ def create_metadata_column(metadata_df: pd.DataFrame,
                            ) -> bk.layouts.column:
     """
 
-    :param bokeh_source:
+    :param metadata_df:
     :param metadata:
     :param selected_indexes:
     :return:
     """
 
-    print(selected_indexes)
+    logger.debug(f"Points selected: {selected_indexes}")
 
     # We must handle the None case so that we can call this function
     # upon application start, as well as point deselection.
@@ -391,7 +400,6 @@ def create_metadata_column(metadata_df: pd.DataFrame,
         selected_metadata_keys = get_metadata_keys(metadata_df,
                                                    selected_indexes)
 
-        # print(selected_metadata_keys)
         # Use those active keys to build metadata paragraphs.
         paragraphs = [build_metadata_paragraph(metadata, keys)
                       for keys in selected_metadata_keys]

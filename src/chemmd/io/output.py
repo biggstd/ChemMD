@@ -15,8 +15,8 @@ from ..models.util import create_uuid
 logger = logging.getLogger(__name__)
 
 
-def prepare_nodes_for_bokeh(x_groups: QueryGroup,
-                            y_groups: QueryGroup,
+def prepare_nodes_for_bokeh(x_groups: List[QueryGroup],
+                            y_groups: List[QueryGroup],
                             nodes: List[Node]
                             ) -> Tuple[pd.DataFrame, pd.DataFrame, dict]:
     """Prepare a main pd.DataFrame and a metadata ChainMap from a
@@ -69,20 +69,18 @@ def create_group_mapping(mapping, groups: List):
     # logger.debug(f"Mapping species: {species}")
 
     for group in groups:
-        logger.debug(f"Examining group:\n\t{group}")
+        # logger.debug(f"Examining group:\n\t{group}")
 
         if group.factor_filters != ("Species",):
             for keys, metadata in mapping.items():
 
                 species, factor_label = keys
                 group_species_matches = list(get_matching_species(species, group))
-                if group_species_matches:
-                    logger.debug(f"Species ----- {group_species_matches}")
 
                 if group_species_matches and metadata["factor"].query(group.factor_filters):
                     metadata["species_keys"] = list(group_species_matches)
                     group_mapping[group] = metadata
-                    logger.debug(f"Match found: {metadata['factor'].label}")
+                    # logger.debug(f"Match found: {metadata['factor'].label}")
                     # The mappings are priority-ordered, so if a match is found
                     # we must break out of the loop to prevent the desired value
                     # from being overwritten with a lower-priority one.
@@ -136,6 +134,5 @@ def group_mapping_as_df(group_mapping):
     except ValueError:
         pass
 
-    logger.debug(data_dict)
     df = pd.DataFrame(data_dict)
     return df, metadata_dict

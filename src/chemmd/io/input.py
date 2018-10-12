@@ -12,8 +12,6 @@ from typing import List
 from .. import config
 from ..models import (Factor, SpeciesFactor, Comment, ElementalTypes,
                       NodeTypes, Source, Sample, Experiment, Node)
-# from ..models.core import Factor, SpeciesFactor, Comment, ElementalTypes
-# from ..models.nodal import NodeTypes, Source, Sample, Experiment, Node
 
 logger = logging.getLogger(__name__)
 

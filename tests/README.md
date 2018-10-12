@@ -54,6 +54,13 @@ Testing Bokeh Applications
 + `table_scatter_combo_test`
 
 ```bash
-# Launch the test application.
+# Launch a test application.
 bokeh serve --show tests/bokeh_tests/table_test/ --log-level debug
+bokeh serve --show tests/bokeh_tests/scatter_test/ --log-level debug
+bokeh serve --show tests/bokeh_tests/scatter_table_combo_test/ --log-level debug
+```
+
+```bash
+# Launch all test applications.
+sh scripts/run_test_bokeh_server.sh
 ```

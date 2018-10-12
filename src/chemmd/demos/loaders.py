@@ -3,7 +3,8 @@
 """
 import os
 
-from ..io.input import node_from_path
+from ..io import node_from_path
+from ..models import QueryGroup
 
 
 JSON_DEMOS = {
@@ -14,12 +15,12 @@ JSON_DEMOS = {
 demo_keys = tuple(JSON_DEMOS.keys())
 
 NMR_GROUPS = dict(
-    x_groups=(('Total Aluminate Concentration', ('Molar',), ("Al",)),
-              ('Counter Ion Concentration', ('Molar',),
+    x_groups=(QueryGroup('Total Aluminate Concentration', ('Molar',), ("Al",)),
+              QueryGroup('Counter Ion Concentration', ('Molar',),
                ("Na+", "Li+", "Cs+", "K+")),
-              ('Counter Ion', ('Species',), ("Na+", "Li+", "Cs+", "K+",)),
-              ('Base Concentration', ('Molar',), ("OH-",))),
-    y_groups=(('27 Al ppm', ('ppm',), ("Al",)),)
+              QueryGroup('Counter Ion', ('Species',), ("Na+", "Li+", "Cs+", "K+",)),
+              QueryGroup('Base Concentration', ('Molar',), ("OH-",))),
+    y_groups=(QueryGroup('27 Al ppm', ('ppm',), ("Al",)),)
 )
 
 

@@ -176,15 +176,11 @@ def nmr_groups():
                 ('Counter Ion', ('Species',), ("Na+", "Li+", "Cs+", "K+",)),
                 ('Base Concentration', ('Molar', ), ("OH-",)))
 
-    x_query_groups = [QueryGroup(
-        **{"column_name": cn, "factor_filters": ff, "species_filters": sf}
-    ) for cn, ff, sf in x_groups]
+    x_query_groups = [QueryGroup(*items) for items in x_groups]
 
     y_groups = (('27 Al ppm', 'ppm', ("Al",)),)
 
-    y_query_groups = [QueryGroup(
-        **{"column_name": cn, "factor_filters": ff, "species_filters": sf}
-    ) for cn, ff, sf in y_groups]
+    y_query_groups = [QueryGroup(*items) for items in y_groups]
 
     return x_query_groups, y_query_groups
 
