@@ -12,7 +12,6 @@ Module Descriptions
 -------------------
 
 + `__init__.py` Config file loading, package declarations.
-+ `transforms.py` Transforms for data.
 
 Package Descriptions
 --------------------

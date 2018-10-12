@@ -1,4 +1,10 @@
+"""Transforms for data.
 
+"""
+
+# ----------------------------------------------------------------------------
+# Imports -- Standard Python modules
+# ----------------------------------------------------------------------------
 import logging
 
 logger = logging.getLogger(__name__)
@@ -21,6 +27,11 @@ INDEPENDENT_TRANSFORMS = {
 
 
 def apply_transform(group_dict):
+    """Apply a transform to a grouping dictionary.
+
+    :param group_dict:
+    :return:
+    """
     for group, metadata_dict in group_dict.items():
         g_label, g_unit_filter, g_species_filter = group
 

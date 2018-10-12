@@ -7,11 +7,8 @@ by the ``io`` module.
 """
 
 # ----------------------------------------------------------------------------
-# Imports
+# Imports -- Standard Python modules
 # ----------------------------------------------------------------------------
-
-# Standard library imports
-# import collections
 import glob
 import json
 import itertools

@@ -150,19 +150,19 @@ def sipos_drupal_node():
 @pytest.fixture
 def sipos_nmr_json():
     path = loaders.json_demo_path(loaders.JSON_DEMOS["SIPOS_NMR"])
-    return chemmd.io.input.read_idream_json(path)
+    return chemmd.io.input.read_chemmd_json(path)
 
 
 @pytest.fixture
 def sipos_nmr2_json():
     path = loaders.json_demo_path(loaders.JSON_DEMOS["SIPOS_NMR_2"])
-    return chemmd.io.input.read_idream_json(path)
+    return chemmd.io.input.read_chemmd_json(path)
 
 
 @pytest.fixture
 def ernesto_nmr():
     path = loaders.json_demo_path(loaders.JSON_DEMOS["ERNESTO_NMR_1"])
-    return chemmd.io.input.read_idream_json(path)
+    return chemmd.io.input.read_chemmd_json(path)
 
 
 # ----------------------------------------------------------------------------

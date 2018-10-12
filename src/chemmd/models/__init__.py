@@ -24,4 +24,5 @@ NodeTypes = Union[Node, Sample, Experiment, Source]
 # Define Elemental Types.
 ElementalTypes = Union[Factor, SpeciesFactor, Comment]
 
+# Define Group Types.
 GroupTypes = Union[QueryGroup, DerivedGroup]

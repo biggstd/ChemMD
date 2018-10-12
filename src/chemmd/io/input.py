@@ -1,14 +1,16 @@
 # ----------------------------------------------------------------------------
-# Imports
+# Imports -- Standard Python Library
 # ----------------------------------------------------------------------------
 import csv
 import json
-
 import logging
 import os
 import collections
 from typing import List
 
+# ----------------------------------------------------------------------------
+# Local package imports.
+# ----------------------------------------------------------------------------
 from .. import config
 from ..models import (Factor, SpeciesFactor, Comment, ElementalTypes,
                       NodeTypes, Source, Sample, Experiment, Node)
@@ -22,7 +24,7 @@ logger = logging.getLogger(__name__)
 # These should never need be used directly. Consider appending "__" to the
 # front of these function names.
 # ----------------------------------------------------------------------------
-def read_idream_json(json_path: str) -> dict:
+def read_chemmd_json(json_path: str) -> dict:
     """Read a json from a path and return as a python dictionary.
 
     """
@@ -120,8 +122,8 @@ def load_csv_as_dict(path: str, base_path: str = config["BASE_PATH"]
 
     The header in each file will be skipped.
 
-    :param path:
-    :param base_path:
+    :param path: The path to the .csv in question.
+    :param base_path: The path to prepend to the path given above.
     :return: A dictionary object with integer keys representing the csv
         column index the data was found in.
 
@@ -154,9 +156,14 @@ def create_nodes_from_files(json_files: List[str]) -> List[Node]:
 
     """
 
-    return [parse_node_json(read_idream_json(json_file))
+    return [parse_node_json(read_chemmd_json(json_file))
             for json_file in json_files]
 
 
 def node_from_path(json_path: str) -> Node:
-    return parse_node_json(read_idream_json(json_path))
+    """Creates a `chemmd`.models.Node` object from a given path.
+
+    :param json_path: A path to a chemmd json file.
+    :returns: A `chemmd.models.Node` object from the given path.
+    """
+    return parse_node_json(read_chemmd_json(json_path))

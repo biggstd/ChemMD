@@ -12,6 +12,7 @@ for analysis and visualization.*
 + [x] Refactor query group objects.
 + [ ] Complete query group setup on Drupal.
     *These should be content types that the user selects.*
++ [ ] Updated metadata views.
 + [x] Fix UI on experiment creation on Drupal.
 + [x] DockerHub integration.
 + [x] Travis CI integration.
@@ -26,6 +27,7 @@ for analysis and visualization.*
 + [x] Complete tests setup for `ChemMD`.
 + [x] Repair `io` functions.
 + [x] Update `bokeh` tests.
+    + [x] Repair `bokeh` application tests.
 + [ ] Sphinx documentation setup.
 + [ ] Add a license.
 + [ ] Bettercode recommendations and re-factors..
@@ -36,11 +38,13 @@ Folder Descriptions
 *See the README files in each directory for a more detailed
 description.*
 
-+ `bokeh_apps` [Bokeh](https://github.com/bokeh/bokeh) web
++ `bokeh_applications` [Bokeh](https://github.com/bokeh/bokeh) web
     applications which display data / metadata sets provided
     by `ChemMD`.
-+ `chemmd` The Python package which provides the data
-    for the `bokeh` applications in `bokeh_apps`.
++ `src/chemmd` The Python package which provides the data
+    for the `bokeh` applications in `bokeh_apps`. The `src`
+    directory is used to prevent tests from importing a local
+    version of the package.
 + `scripts` Scripts used for deploying applications within
     `bokeh_apps`.
 + `tests` Tests for the contained programs.

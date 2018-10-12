@@ -6,21 +6,21 @@ of the two.
 """
 
 # ----------------------------------------------------------------------------
-# Imports
+# Imports -- Standard Python modules
 # ----------------------------------------------------------------------------
 import logging
 import uuid
 
 import chemmd.io.input
-import numpy as np
 import param  # Boiler-plate for controlled class attributes.
 from textwrap import dedent  # Prevent indents from percolating to the user.
-from typing import Union, List
+from typing import List, Dict
 
 # ----------------------------------------------------------------------------
 # Local package imports.
 # ----------------------------------------------------------------------------
 from . import util
+from .core import Factor
 
 logger = logging.getLogger(__name__)
 
@@ -32,15 +32,6 @@ class Node(param.Parameterized):
     heavy-lifting in the background.
 
     """
-
-    # name = param.String(
-    #     allow_None=False,
-    #     doc=dedent("""User supplied title of the Drupal Node or experiment.
-    #
-    #     This model contains all the information concerning a given
-    #     Drupal Node.
-    #     """)
-    # )
 
     node_information = param.Dict(
         allow_None=True, default=None,
@@ -117,7 +108,7 @@ class Experiment(param.Parameterized):
     """Model for single assay / experiment - contains a datafile and all
     metadata pertaining to that file.
 
-    This model is used by the `isadream.io` module to create data frames
+    This model is used by the `chemmd.io` module to create data frames
     and metadata dictionaries. This model should be considered the 'core'
     of this model set.
 
@@ -175,14 +166,21 @@ class Experiment(param.Parameterized):
 
     @property
     def metadata_uuid(self):
+        """Creates and returns a unique universal identifier
+        for this object."""
         return str(uuid.uuid3(uuid.NAMESPACE_DNS, str(self)))
 
-    def parse_factor_value(self, factor):
+    def parse_factor_value(self, factor: Factor) -> List:
+        """Parses a factor value.
+
+        :param factor: A `chemmd.models.Factor` object.
+        :returns: A sized list of that factors value.
+        """
         csv_data_dict = chemmd.io.input.load_csv_as_dict(self.datafile)
         factor_size = max(len(values) for values in csv_data_dict.values())
 
         if factor.is_csv_index:
-            data = np.array(csv_data_dict[str(factor.csv_column_index)])
+            data = csv_data_dict[str(factor.csv_column_index)]
             return data
         elif factor.value:
             return [factor.value, ] * factor_size
@@ -190,38 +188,67 @@ class Experiment(param.Parameterized):
     # -------------------------------------------------------------------------
     # ChainMap creation functions.
     # -------------------------------------------------------------------------
-    def species_factor_mapping(self, parent_node):
+    def species_factor_mapping(self, parent_node: Node) -> Dict:
+        """Create a species - factor label mapping of this Experiment object.
 
+        This function creates a dictionary of `{(species_keys, factor_keys):
+        factors}` for each factor associated with this object. The order
+        of examination is setup so that lower priority factors will be
+        overwritten by higher priority factors.
+
+        :param parent_node: The parent `chemmd.models.Node` object.
+        :return: A dictionary mapping of species and factor keys to their
+            matching factors.
+
+        """
+        # Create dictionaries to be output.
         source_mapping = {}
         sample_mapping = {}
 
+        # Oder the samples and factors of this experiment.
+        # Parental factors (those with a higher priority) are added at the
+        # end so that they overwrite lower priority factors.
         samples = self.samples + self.parental_samples
         factors = self.factors + self.parental_factors
 
         for sample in samples:
 
+            # Get all source objects associated with this sample.
             sources = util.get_all_elements(sample, "all_sources")
 
             for source in sources:
 
+                # Create the basic source mapping, then add associated
+                # metadata objects.
                 source_maps = source.mapping()
                 for source_map in source_maps.values():
-                    source_map["factor_data"] = self.parse_factor_value(source_map["factor"])
+                    source_map["factor_data"] = self.parse_factor_value(
+                        source_map["factor"])
                     source_map["sample"] = sample
                     source_map["experiment"] = self
                     source_map["parent_node"] = parent_node
 
+                # Update the output mapping dictionary, Call the
+                # original dictionary first so that the new values
+                # overwrite the old.
                 source_mapping = {**source_maps, **source_mapping}
 
+            # Create the basic sample mapping and update it with
+            # associated metadata objects.
             sample_maps = sample.mapping(factors)
-
             for sample_map in sample_maps.values():
-                sample_map["factor_data"] = self.parse_factor_value(sample_map["factor"])
+                sample_map["factor_data"] = self.parse_factor_value(
+                    sample_map["factor"])
                 sample_map["experiment"] = self
                 sample_map["parent_node"] = parent_node
 
+            # Update the output mapping. Call the original mapping
+            # first so that new values overwrite the old values.
             sample_mapping = {**sample_maps, **sample_mapping}
 
+        # Combine the source and sample mappings. Samples have a higher
+        # priority, so they are called last so that those values
+        # overwrite any matching keys in the source mapping.
         mapping = {**source_mapping, **sample_mapping}
         return mapping
 
@@ -308,12 +335,21 @@ class Sample(param.Parameterized):
         return species_map
 
     def mapping(self, applied_factors=None):
+        # Set to an empty list if no applied factors are given.
+        # It is bad form to use a 'mutable' default argument,
+        # such as an emtpy list. This is an ad-hoc way around that.
         if applied_factors is None:
             applied_factors = []
-        factors = applied_factors + util.get_all_elements(self, "all_factors")
+
+        # The applied factors should be a higher priority than the contained
+        # factors.
+        factors = util.get_all_elements(self, "all_factors") + applied_factors
         mapping = {}
+
+        # Build the basic species map.
         species_map = self.species_map()
 
+        # Construct the basic mapping and add it to the output mapping.
         for factor in factors:
             factor_mapping = {"factor": factor,
                               "sample": self,
@@ -414,12 +450,21 @@ class Source(param.Parameterized):
         return species_map
 
     def mapping(self, applied_factors=None):
+        # Set to an empty list if no applied factors are given.
+        # It is bad form to use a 'mutable' default argument,
+        # such as an emtpy list. This is an ad-hoc way around that.
         if applied_factors is None:
             applied_factors = []
-        factors = applied_factors + util.get_all_elements(self, "all_factors")
+
+        # The applied factors should be a higher priority than the contained
+        # factors.
+        factors = util.get_all_elements(self, "all_factors") + applied_factors
         mapping = {}
+
+        # Build the basic species map.
         species_map = self.species_map()
 
+        # Construct the basic mapping and add it to the output mapping.
         for factor in factors:
             factor_mapping = {"factor": factor,
                               "source": self,
@@ -437,5 +482,3 @@ class Source(param.Parameterized):
         for species in self.all_species:
             text += species.as_markdown
         return text
-
-
