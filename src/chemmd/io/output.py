@@ -7,15 +7,16 @@ import re
 from typing import List, Tuple
 
 import pandas as pd
-from ..models.core import QueryGroupType
-from ..models.nodal import Node
+
+
+from ..models import Node, QueryGroup
 from ..models.util import create_uuid
 
 logger = logging.getLogger(__name__)
 
 
-def prepare_nodes_for_bokeh(x_groups: QueryGroupType,
-                            y_groups: QueryGroupType,
+def prepare_nodes_for_bokeh(x_groups: QueryGroup,
+                            y_groups: QueryGroup,
                             nodes: List[Node]
                             ) -> Tuple[pd.DataFrame, pd.DataFrame, dict]:
     """Prepare a main pd.DataFrame and a metadata ChainMap from a
@@ -61,27 +62,16 @@ def create_group_mapping(mapping, groups: List):
     group_mapping = {}
 
     def get_matching_species(species_list, group):
-        g_label, g_unit_filter, g_species_filter = group
-
-        for s, sf in itertools.product(species_list, g_species_filter):
+        for s, sf in itertools.product(species_list, group.species_filters):
             if re.match(sf, s):
                 yield s
-
-    # species_tuples = list(zip(*list(mapping.keys())))[0]
-    # species = list(set(itertools.chain.from_iterable(species_tuples)))
 
     # logger.debug(f"Mapping species: {species}")
 
     for group in groups:
         logger.debug(f"Examining group:\n\t{group}")
-        g_label, g_unit_filter, g_species_filter = group
 
-        # matching_species = list(get_matching_species(species, group))
-        # logger.debug(f"Found matching species:\n\t{matching_species}")
-        # if not matching_species:
-        #     continue
-
-        if g_unit_filter != ("Species",):
+        if group.factor_filters != ("Species",):
             for keys, metadata in mapping.items():
 
                 species, factor_label = keys
@@ -89,7 +79,7 @@ def create_group_mapping(mapping, groups: List):
                 if group_species_matches:
                     logger.debug(f"Species ----- {group_species_matches}")
 
-                if group_species_matches and metadata["factor"].query(g_unit_filter):
+                if group_species_matches and metadata["factor"].query(group.factor_filters):
                     metadata["species_keys"] = list(group_species_matches)
                     group_mapping[group] = metadata
                     logger.debug(f"Match found: {metadata['factor'].label}")
@@ -115,8 +105,6 @@ def group_mapping_as_df(group_mapping):
 
     for group, grouping_dict in group_mapping.items():
 
-        g_label, g_unit_filter, g_species_filter = group
-
         metadata_keys = []
 
         for nodal in ("experiment", "sample", "source"):
@@ -131,14 +119,14 @@ def group_mapping_as_df(group_mapping):
 
         try:
             factor_data = grouping_dict["factor_data"]
-            data_dict[("data", g_label)] = factor_data
+            data_dict[("data", group.column_name)] = factor_data
             metadata_keys = [tuple(metadata_keys), ] * len(factor_data)
-            data_dict[("metadata", g_label)] = metadata_keys
+            data_dict[("metadata", group.column_name)] = metadata_keys
 
         except KeyError:
-            data_dict[("data", g_label)] = grouping_dict["species_data"]
+            data_dict[("data", group.column_name)] = grouping_dict["species_data"]
             metadata_keys = [tuple(metadata_keys), ]
-            data_dict[("metadata", g_label)] = metadata_keys
+            data_dict[("metadata", group.column_name)] = metadata_keys
 
     try:
         factor_size = max(len(values) for values in data_dict.values())
@@ -150,5 +138,4 @@ def group_mapping_as_df(group_mapping):
 
     logger.debug(data_dict)
     df = pd.DataFrame(data_dict)
-    # logger.debug(f"Columns: {df.columns}, shape: {df.shape}")
     return df, metadata_dict

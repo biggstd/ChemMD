@@ -9,6 +9,7 @@ for analysis and visualization.*
 
 **To do:**
 
++ [x] Refactor query group objects.
 + [ ] Complete query group setup on Drupal.
     *These should be content types that the user selects.*
 + [x] Fix UI on experiment creation on Drupal.
@@ -24,7 +25,7 @@ for analysis and visualization.*
 + [x] Better code integration.
 + [x] Complete tests setup for `ChemMD`.
 + [x] Repair `io` functions.
-+ [ ] Update `bokeh` tests.
++ [x] Update `bokeh` tests.
 + [ ] Sphinx documentation setup.
 + [ ] Add a license.
 + [ ] Bettercode recommendations and re-factors..

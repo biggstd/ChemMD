@@ -13,7 +13,7 @@ import pytest
 # ----------------------------------------------------------------------------
 from chemmd.demos import loaders
 
-from chemmd.models.core import Factor, SpeciesFactor, Comment
+from chemmd.models.core import Factor, SpeciesFactor, Comment, QueryGroup
 from chemmd.models.nodal import Source, Sample, Experiment, Node
 
 
@@ -171,19 +171,29 @@ def ernesto_nmr():
 
 @pytest.fixture
 def nmr_groups():
-    x_groups = (('Total Aluminate Concentration', 'Molar', ("Al",)),
-                ('Counter Ion Concentration', 'Molar', ("Na+", "Li+", "Cs+", "K+")),
+    x_groups = (('Total Aluminate Concentration', ('Molar', ), ("Al",)),
+                ('Counter Ion Concentration', ('Molar', ), ("Na+", "Li+", "Cs+", "K+")),
                 ('Counter Ion', ('Species',), ("Na+", "Li+", "Cs+", "K+",)),
-                ('Base Concentration', 'Molar', ("OH-",)))
+                ('Base Concentration', ('Molar', ), ("OH-",)))
+
+    x_query_groups = [QueryGroup(
+        **{"column_name": cn, "factor_filters": ff, "species_filters": sf}
+    ) for cn, ff, sf in x_groups]
+
     y_groups = (('27 Al ppm', 'ppm', ("Al",)),)
-    return x_groups, y_groups
+
+    y_query_groups = [QueryGroup(
+        **{"column_name": cn, "factor_filters": ff, "species_filters": sf}
+    ) for cn, ff, sf in y_groups]
+
+    return x_query_groups, y_query_groups
 
 
 @pytest.fixture
 def raman_groups():
-    x_groups = (('Total Aluminate Concentration', 'Molar', ("Al",)),
-                ('Counter Ion Concentration', 'Molar', ("Na+", "Li+", "Cs+", "K+")),
+    x_groups = (('Total Aluminate Concentration', ('Molar',), ("Al",)),
+                ('Counter Ion Concentration', ('Molar', ), ("Na+", "Li+", "Cs+", "K+")),
                 ('Counter Ion', ('Species',), ("Na+", "Li+", "Cs+", "K+",)),
-                ('Base Concentration', 'Molar', ("OH-",)))
-    y_groups = (('Integrated Raman Intensity', 'Integrated Intensity', ("Al",)),)
+                ('Base Concentration', ('Molar', ), ("OH-",)))
+    y_groups = (('Integrated Raman Intensity', ('Integrated Intensity', ), ("Al",)),)
     return x_groups, y_groups

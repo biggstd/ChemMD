@@ -18,7 +18,7 @@ from textwrap import dedent  # Prevent indents from percolating to the user.
 from typing import Union, List
 
 # ----------------------------------------------------------------------------
-# Local project imports.
+# Local package imports.
 # ----------------------------------------------------------------------------
 from . import util
 
@@ -440,8 +440,3 @@ class Source(param.Parameterized):
         return text
 
 
-# ----------------------------------------------------------------------------
-# Define Type Hints.
-# ----------------------------------------------------------------------------
-
-NodeTypes = Union[Node, Sample, Experiment, Source]

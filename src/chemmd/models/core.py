@@ -1,17 +1,18 @@
 """Core Metadata and Group Models
 
 """
+
 # ----------------------------------------------------------------------------
-# Imports
+# Imports -- Standard Python modules
 # ----------------------------------------------------------------------------
-# Standard Python modules.
 import re  # Regular expression functions.
 from textwrap import dedent  # Prevent indents from percolating to the user.
-from typing import Tuple, Union, Callable
-
+from typing import Tuple, Union, Callable, NamedTuple  # For declaring types.
 import param  # Boiler-plate for controlled class attributes.
 
-# Local project imports.
+# ----------------------------------------------------------------------------
+# Local package imports.
+# ----------------------------------------------------------------------------
 from . import util
 
 
@@ -187,53 +188,13 @@ class DataFile(param.Parameterized):
     pass
 
 
-# ----------------------------------------------------------------------------
-# Define Query Groups Types
-# 
-# These are implemented as generics so that these classes need not be
-# created.
-# ----------------------------------------------------------------------------
+class QueryGroup(NamedTuple):
+    column_name: str
+    factor_filters: Tuple[str, ...]
+    species_filters: Tuple[str, ...]
 
 
-QueryGroupType = Tuple[str, Tuple[str, ...], Tuple[str, ...]]
-DerivedGroupType = Tuple[str, Tuple[str, ...], Callable]
-GroupTypes = Union[QueryGroupType, DerivedGroupType]
-
-
-class QueryGroup(param.Parameterized):
-    """A QueryGroup constructs a column for a data set based on Factor and
-    SpeciesFactor entries.
-
-    Generally, a query group has the following form:
-        Tuple[str, Tuple[str, ...], Tuple[str, ...]]
-
-    ***Note***: This helper class has no function other than ensuring
-    query groups are properly formatted. Use of this class is not
-    required.
-
-    """
-
-    column_name = param.String(allow_None=False)
-    factor_filter = param.Tuple(allow_None=False)
-    species_filter = param.Tuple(allow_None=False)
-
-    @property
-    def group(self) -> QueryGroupType:
-        return self.column_name, self.factor_filter, self.species_filter
-
-
-class DerivedGroup(param.Parameterized):
-    """A DerivedGroup constructs a column based on existing columns.
-
-    """
-
-    column_name = param.String(allow_None=False)
-    source_names = param.Tuple(allow_None=False)
-    callable_ = param.Callable(allow_None=False)
-
-    @property
-    def group(self) -> DerivedGroupType:
-        return self.column_name, self.source_names, self.callable_
-
-
-ElementalTypes = Union[Factor, SpeciesFactor, Comment, DataFile]
+class DerivedGroup(NamedTuple):
+    column_name: str
+    source_names: Tuple[str, ...]
+    callable_: Callable
