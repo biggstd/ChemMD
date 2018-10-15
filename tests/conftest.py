@@ -5,7 +5,7 @@
 # ----------------------------------------------------------------------------
 # General Imports
 # ----------------------------------------------------------------------------
-import chemmd.io.input
+from chemmd import io
 import pytest
 
 # ----------------------------------------------------------------------------
@@ -13,8 +13,8 @@ import pytest
 # ----------------------------------------------------------------------------
 from chemmd.demos import loaders
 
-from chemmd.models.core import Factor, SpeciesFactor, Comment, QueryGroup
-from chemmd.models.nodal import Source, Sample, Experiment, Node
+from chemmd.models import Factor, SpeciesFactor, Comment, QueryGroup
+from chemmd.models import Source, Sample, Experiment, Node
 
 
 # ----------------- -----------------------------------------------------------
@@ -111,7 +111,7 @@ def source_node_fixtures(factor_fixtures, species_factor_fixtures,
 @pytest.fixture
 def sample_node_fixtures(factor_fixtures, species_factor_fixtures,
                          comment_factor_fixtures, source_node_fixtures):
-    return [Sample(**dict(name="Test Sample",
+    return [Sample(**dict(sample_name="Test Sample",
                           species=species_factor_fixtures,
                           factors=factor_fixtures,
                           sources=source_node_fixtures,
@@ -131,8 +131,7 @@ def experiment_node_fixtures(factor_fixtures, sample_node_fixtures,
 @pytest.fixture
 def drupal_node_fixture_a(experiment_node_fixtures, factor_fixtures,
                           sample_node_fixtures, comment_factor_fixtures):
-    return Node(**dict(name="Drupal Node A",
-                       experiments=experiment_node_fixtures,
+    return Node(**dict(experiments=experiment_node_fixtures,
                        factors=factor_fixtures,
                        samples=sample_node_fixtures,
                        comments=comment_factor_fixtures))
@@ -150,19 +149,19 @@ def sipos_drupal_node():
 @pytest.fixture
 def sipos_nmr_json():
     path = loaders.json_demo_path(loaders.JSON_DEMOS["SIPOS_NMR"])
-    return chemmd.io.input.read_chemmd_json(path)
+    return io.input.read_chemmd_json(path)
 
 
 @pytest.fixture
 def sipos_nmr2_json():
     path = loaders.json_demo_path(loaders.JSON_DEMOS["SIPOS_NMR_2"])
-    return chemmd.io.input.read_chemmd_json(path)
+    return io.input.read_chemmd_json(path)
 
 
 @pytest.fixture
 def ernesto_nmr():
     path = loaders.json_demo_path(loaders.JSON_DEMOS["ERNESTO_NMR_1"])
-    return chemmd.io.input.read_chemmd_json(path)
+    return io.input.read_chemmd_json(path)
 
 
 # ----------------------------------------------------------------------------

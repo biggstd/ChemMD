@@ -1,4 +1,13 @@
-"""Core Metadata and Group Models
+"""
+Core Models
+###########
+
+**Overview**
+
+Core models are those that make up the fundamental data / metadata
+blocks which model a users data. Of these, the ``Factor`` and
+``SpeciesFactor`` objects are the most important. See their use
+in the nodal mapping functions.
 
 """
 
@@ -8,7 +17,7 @@
 import re  # Regular expression functions.
 from textwrap import dedent  # Prevent indents from percolating to the user.
 from typing import Tuple, Union, Callable, NamedTuple  # For declaring types.
-import param  # Boiler-plate for controlled class attributes.
+from dataclasses import dataclass
 
 # ----------------------------------------------------------------------------
 # Local package imports.
@@ -19,7 +28,8 @@ from . import util
 # ----------------------------------------------------------------------------
 # Elemental Class Definitions
 # ----------------------------------------------------------------------------
-class Factor(param.Parameterized):
+@dataclass
+class Factor:
     """The factor is the fundamental storage model for an observation.
 
     It is designed in such a way that it should be able to store:
@@ -33,37 +43,15 @@ class Factor(param.Parameterized):
     files, as well as 'single-valued' data (eg. experimental temperature).
 
     """
-
-    factor_type = param.String(
-        allow_None=False,
-        doc=dedent("""A factor type is the outermost ontology group. """))
-
-    decimal_value = param.Number(
-        allow_None=True, default=None,
-        doc=dedent("""The decimal value of this factor. """))
-
-    string_value = param.String(
-        allow_None=True,
-        doc=dedent("""The string value of this factor. This should be 
-        used only if no other value field will work for the data. """))
-
-    reference_value = param.String(
-        allow_None=True, default=None,
-        doc=dedent("""A reference value of this factor. This should 
-        be used when The value of this factor has a discreet set of 
-        possible values."""))
-
-    unit_reference = param.String(
-        allow_None=True, default=None,
-        doc=dedent("""The unit that describes this factor."""))
-
-    csv_column_index = param.Integer(
-        allow_None=True, default=None,
-        doc=dedent("""An integer reference that points to the column index
-        of the data that this factor describes."""))
+    factor_type: str
+    decimal_value: float = None
+    string_value: str = None
+    reference_value: str = None
+    unit_reference: str = None
+    csv_column_index: int = None
 
     @property
-    def label(self) -> Tuple[str, ...]:
+    def label(self) -> Tuple[str]:
         """A label property. These three parameters are the categorical units or
         ontology term of this factor.
 
@@ -111,7 +99,8 @@ class Factor(param.Parameterized):
         query_terms = util.ensure_list(query_terms)
 
         # Make an tuple to handle the properties easily.
-        properties = [val for _, val in self.get_param_values()]
+        properties = [self.factor_type, self.reference_value,
+                      self.unit_reference, self.string_value]
 
         if any(re.match(term, str(prop))
                for term in query_terms
@@ -125,7 +114,8 @@ class Factor(param.Parameterized):
         """)
 
 
-class SpeciesFactor(param.Parameterized):
+@dataclass
+class SpeciesFactor:
     """A species factor is a pair of values. A species and a stoichiometry
     coefficient.
 
@@ -133,16 +123,8 @@ class SpeciesFactor(param.Parameterized):
     Sample or Source object.
 
     """
-
-    species_reference = param.String(
-        allow_None=False,
-        doc=dedent("""The species being referenced. """))
-
-    stoichiometry = param.Number(
-        allow_None=False,
-        default=1.0,
-        doc=dedent("""The coefficient corresponding to this species factor.
-        """))
+    species_reference: str
+    stoichiometry: float = 1.0
 
     def query(self, query_term) -> bool:
         """A boolean search function. Returns True if the query term
@@ -159,18 +141,17 @@ class SpeciesFactor(param.Parameterized):
         """)
 
 
-class Comment(param.Parameterized):
+@dataclass
+class Comment:
     """A node comment model.
+
+    Holds data for a comment and functions for viewing those comment
+    values as HTML.
 
     """
 
-    comment_title = param.String(
-        allow_None=False,  # There must at least be a comment name.
-        doc=dedent("""The title of a comment."""))
-
-    comment_body = param.String(
-        allow_None=Factor,
-        doc=dedent("""The body text of a comment. """))
+    comment_title: str
+    comment_body: str = None
 
     @property
     def as_markdown(self):
@@ -179,13 +160,14 @@ class Comment(param.Parameterized):
         """)
 
 
-class DataFile(param.Parameterized):
+@dataclass
+class DataFile:
     """FUTURE: This class is not used or implemented.
 
     In the future it will may handle data file paths / objects.
 
     """
-    pass
+    filename: str
 
 
 class QueryGroup(NamedTuple):

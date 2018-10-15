@@ -10,9 +10,8 @@ from typing import Dict
 # ----------------------------------------------------------------------------
 # Local package imports.
 # ----------------------------------------------------------------------------
-from ..models import Node
+from ..models import Node, QueryGroup
 from ..io import node_from_path
-from ..models import QueryGroup
 
 # ----------------------------------------------------------------------------
 # Constant definitions.

@@ -255,9 +255,9 @@ def build_selection_controls(bokeh_source: bk.models.ColumnDataSource,
 
     :param bokeh_source: The data set to be examined in the form of
         a bokeh ColumnDataSource model.
-    :param x_groups:  A user-given grouping query for axis values.
-    :param y_groups:A user-given grouping query for axis values.
-    :returns: A dictionary of labels: bk.models.Select controllers.
+    :param x_groups: A user-given grouping query for axis values.
+    :param y_groups: A user-given grouping query for axis values.
+    :return: A dictionary of labels values and controllers.
 
     """
 

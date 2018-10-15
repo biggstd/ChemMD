@@ -25,13 +25,11 @@ def prepare_nodes_for_bokeh(x_groups: List[QueryGroup],
                             nodes: List[Node]
                             ) -> Tuple[pd.DataFrame, pd.DataFrame, dict]:
     """Prepare a main pd.DataFrame and a metadata ChainMap from a
-    list of `Node`s.
+    list of ``Node`` objects.
 
     :param x_groups: A user-given grouping query for X-axis values.
     :param y_groups: A user-given grouping query for Y-axis values.
-    :param nodes: A list of Node objects to apply the
-        group queries to.
-
+    :param nodes: A list of Node objects to apply the group queries to.
     :returns: A populated pd.DataFrame and a ChainMap with all the
         data and metadata requested by the given  groups from the
         given nodes.

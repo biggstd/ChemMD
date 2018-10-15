@@ -64,7 +64,7 @@ def parse_sources(json_dict: dict) -> Source:
     factors = build_elemental_model(json_dict, Factor, "source_factors")
     species = build_elemental_model(json_dict, SpeciesFactor, "source_species")
     comments = build_elemental_model(json_dict, Comment, "source_comments")
-    return Source(name=source_name, species=species, factors=factors,
+    return Source(source_name=source_name, species=species, factors=factors,
                   comments=comments)
 
 
@@ -76,7 +76,7 @@ def parse_samples(json_dict: dict) -> Sample:
     species = build_elemental_model(json_dict, SpeciesFactor, "sample_species")
     comments = build_elemental_model(json_dict, Comment, "sample_comments")
     sources = build_nodal_model(json_dict, parse_sources, "sample_sources")
-    return Sample(name=sample_name, factors=factors, species=species,
+    return Sample(sample_name=sample_name, factors=factors, species=species,
                   sources=sources, comments=comments)
 
 
