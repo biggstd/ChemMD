@@ -78,7 +78,7 @@ def create_group_mapping(mapping: Dict, groups: List[QueryGroup]) -> Dict:
                 yield s
 
     for group in groups:
-        logger.debug(f"Examining group: {group}")
+        logger.debug(f"Examining group:\n{group.column_name}")
 
         # Ensure that this is not the special case of a species column.
         if group.factor_filters != ("Species",):
@@ -95,7 +95,9 @@ def create_group_mapping(mapping: Dict, groups: List[QueryGroup]) -> Dict:
                 if group_species_matches and metadata["factor"].query(group.factor_filters):
                     metadata["species_keys"] = list(group_species_matches)
                     group_mapping[group] = metadata
+
                     logger.debug(f"Match found: {metadata['factor'].label}")
+
                     # The mappings are priority-ordered, so if a match is found
                     # we must break out of the loop to prevent the desired value
                     # from being overwritten with a lower-priority one.
@@ -107,7 +109,9 @@ def create_group_mapping(mapping: Dict, groups: List[QueryGroup]) -> Dict:
             matching_species = list(get_matching_species(species, group))
             group_mapping[group] = {"species_data": [matching_species, ]}
             logger.debug(f"Match found: {matching_species}")
-            break
+            # No `break` is needed here as this is not an inner for loop.
+
+        logger.debug(f"Completed {group.column_name} examination.")
 
     return group_mapping
 
