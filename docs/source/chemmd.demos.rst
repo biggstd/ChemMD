@@ -1,22 +1,11 @@
-chemmd.demos package
-====================
+Demos
+=====
 
-Submodules
-----------
 
-chemmd.demos.loaders module
----------------------------
+Loader Module
+-------------
 
 .. automodule:: chemmd.demos.loaders
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: chemmd.demos
     :members:
     :undoc-members:
     :show-inheritance:

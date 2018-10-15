@@ -1,5 +1,5 @@
-ChemMD Package
-==============
+ChemMD
+======
 
 .. toctree::
 
@@ -8,10 +8,6 @@ ChemMD Package
     chemmd.display
     chemmd.demos
 
-Module contents
----------------
-
 .. automodule:: chemmd
     :members:
     :undoc-members:
-    :show-inheritance:

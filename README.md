@@ -10,9 +10,13 @@ for analysis and visualization.*
 **To do:**
 
 + [x] Refactor query group objects.
++ [ ] Create tutorials and place in documentation.
++ [ ] Repair typos within assays on Drupal.
++ [ ] Host documentation with PNNL? Or on readthedocs.
++ [ ] Fix bug causing the first row of .csv files to be dropped.
 + [ ] Complete query group setup on Drupal.
     *These should be content types that the user selects.*
-+ [ ] Updated metadata views.
++ [ ] Update metadata views.
 + [x] Fix UI on experiment creation on Drupal.
 + [x] DockerHub integration.
 + [x] Travis CI integration.
@@ -28,9 +32,11 @@ for analysis and visualization.*
 + [x] Repair `io` functions.
 + [x] Update `bokeh` tests.
     + [x] Repair `bokeh` application tests.
++ [ ] Improve logging output.
++ [ ] Further update tests.
 + [ ] Sphinx documentation setup.
 + [ ] Add a license.
-+ [ ] Bettercode recommendations and re-factors..
++ [ ] Bettercode recommendations and re-factors.
 
 Folder Descriptions
 -------------------

@@ -1,37 +1,23 @@
-chemmd.display.views package
-============================
-
-Subpackages
------------
+Bokeh Based Views
+=================
 
 .. toctree::
 
     chemmd.display.views.custom_js
 
-Submodules
-----------
 
-chemmd.display.views.generic\_cross\_filter\_scatter module
------------------------------------------------------------
+Cross-Filter Scatter Plot
+-------------------------
 
 .. automodule:: chemmd.display.views.generic_cross_filter_scatter
     :members:
     :undoc-members:
     :show-inheritance:
 
-chemmd.display.views.generic\_table module
-------------------------------------------
+Table View
+----------
 
 .. automodule:: chemmd.display.views.generic_table
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: chemmd.display.views
     :members:
     :undoc-members:
     :show-inheritance:

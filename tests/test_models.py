@@ -65,7 +65,14 @@ def test_drupal_node_creation(drupal_node_fixture_a):
 # ----------------------------------------------------------------------------
 def test_build_factor_map(sipos_drupal_node):
     experiments = sipos_drupal_node.experiments
+    maps = []
     for exp in experiments:
         mapping = exp.species_factor_mapping(sipos_drupal_node)
         if not mapping:
             logger.debug(f"Failed to generated mapping for: {exp}")
+        else:
+            maps.append(mapping)
+
+    # We should have the same number of mappings and experiments.
+    assert len(maps) == 4
+

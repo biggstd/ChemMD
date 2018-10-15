@@ -6,6 +6,7 @@
     "LOG_LEVEL": "DEBUG"
   },
   "TESTING": {
+    "BASE_PATH": "./",
     "HTTP_QUERY_STRING": "JQ",
     "HTTP_GROUP_QUERY": "GQ",
     "LOG_LEVEL": "DEBUG"

@@ -1,4 +1,4 @@
-"""Compound Classes of the package.
+"""
 
 These are classes which are composed of elemental, compound, or a combination
 of the two.
@@ -20,7 +20,6 @@ from dataclasses import dataclass
 # ----------------------------------------------------------------------------
 from . import util
 from .core import Factor, Comment, SpeciesFactor
-from .. import io
 
 logger = logging.getLogger(__name__)
 
@@ -29,15 +28,22 @@ logger = logging.getLogger(__name__)
 class Source:
     """Model for a single Source.
 
-    A source is similar to a sample.
+    A source is similar to a sample, except that it cannot contain
+    another ``Source`` object. The purpose of this object is to
+    allow for a single material source (rather, a collection of
+    species and factors) to be easily re-used across different
+    experiments.
 
-    # TODO: Consider adding nested sources.
     """
 
     source_name: str
+    """The user-given name of this Source."""
     species: List[SpeciesFactor]
+    """A list of ``SpeciesFactor`` objects contained by this instance."""
     factors: List[Factor] = None
+    """A list of ``Factor`` objects contained by this instance."""
     comments: List[Comment] = None
+    """A list of ``Comment`` objects contained by this instance."""
 
     @property
     def all_factors(self) -> List:
@@ -45,6 +51,9 @@ class Source:
 
         This function should handle nested sources in the future with only
         minor modifications.
+
+        Returns:
+            A list of all ``Factor`` objects contained in this instance.
 
         """
         return util.get_all_elements(self, 'factors')
@@ -56,17 +65,41 @@ class Source:
         This function should handle nested sources with only
         minor modifications.
 
-        :return:
+        Returns:
+            A list of all ``SpeciesFactor`` objects contained in this
+            instance.
+
         """
         return util.get_all_elements(self, 'species')
 
     def species_map(self):
+        """Maps the contents of this instances ``SpeciesFactor`` objects
+        to a species_reference: value dictionary / mapping.
+
+        Returns:
+            A dictionary of reference: stoichiometry values.
+
+        """
         species = util.get_all_elements(self, "all_species")
         species_map = {s.species_reference: s.stoichiometry
                        for s in species}
         return species_map
 
-    def mapping(self, applied_factors=None):
+    def mapping(self, applied_factors=None
+                ) -> Dict:
+        """Create a mapping of this object.
+
+        Args:
+            applied_factors (List[``Factor``]): A list of factors
+            to also be mapped. These are treated as higher priority
+            factors that those contained within this object instance.
+
+        Returns:
+            A dictionary with keys make from species_references and
+            factor labels, and values which are dictionaries containing
+            the ``Factor`` and it's parent nodes.
+
+        """
         # Set to an empty list if no applied factors are given.
         # It is bad form to use a 'mutable' default argument,
         # such as an emtpy list. This is an ad-hoc way around that.
@@ -109,10 +142,15 @@ class Sample:
 
     """
     sample_name: str
+    """The user-given name of this Sample."""
     factors: List[Factor]
+    """A list of ``Factor`` objects contained by this instance."""
     species: List[SpeciesFactor]
+    """A list of ``SpeciesFactor`` objects contained by this instance."""
     sources: List[Source]
+    """A list of ``Source`` objects contained by this instance."""
     comments: List[Comment]
+    """A list of ``Comment`` objects contained by this instance."""
 
     @property
     def all_factors(self) -> List:
@@ -218,27 +256,47 @@ class Experiment:
 
     """
     name: str
+    """The user-given name or title of this Experiment node."""
     datafile: str = None
+    """The datafile contained and described by this instance."""
     factors: List[Factor] = None
+    """A list of ``Factor`` objects contained by this instance."""
     samples: List[Sample] = None
+    """A list of ``Sample`` objects contained by this instance."""
     comments: List[Comment] = None
+    """A list of ``Comment`` objects contained by this instance."""
     parental_factors: List[Factor] = None
+    """A list of ``Factor`` objects contained the parent(s) of this
+    instance."""
     parental_info: dict = None
+    """A dictionary describing the parent of this instance."""
     parental_comments: List[Comment] = None
+    """A list of ``Comment`` objects contained the parent(s) of this
+    instance."""
 
     @property
     def metadata_uuid(self):
         """Creates and returns a unique universal identifier
-        for this object."""
+        for this object.
+
+        Returns (str):
+            A string universally unique identifier for this object.
+
+        """
         return str(uuid.uuid3(uuid.NAMESPACE_DNS, str(self)))
 
     def parse_factor_value(self, factor: Factor) -> List:
         """Parses a factor value.
 
-        :param factor: A `chemmd.models.Factor` object.
-        :returns: A sized list of that factors value.
+        Args:
+            factor (Factor): A `chemmd.models.Factor` object to
+            be parsed.
+
+        Returns:
+            A sized list of that factors value.
+
         """
-        csv_data_dict = io.input.load_csv_as_dict(self.datafile)
+        csv_data_dict = util.load_csv_as_dict(self.datafile)
         factor_size = max(len(values) for values in csv_data_dict.values())
 
         if factor.is_csv_index:
@@ -253,13 +311,16 @@ class Experiment:
     def species_factor_mapping(self, parent_node) -> Dict:
         """Create a species - factor label mapping of this Experiment object.
 
-        This function creates a dictionary of `{(species_keys, factor_keys):
-        factors}` for each factor associated with this object. The order
+        This function creates a dictionary of ``{(species_keys, factor_keys):
+        factors}`` for each factor associated with this object. The order
         of examination is setup so that lower priority factors will be
         overwritten by higher priority factors.
 
-        :param parent_node: The parent `chemmd.models.Node` object.
-        :return: A dictionary mapping of species and factor keys to their
+        Args:
+            parent_node (Node): The parent ``chemmd.models.Node`` object.
+
+        Returns (dict):
+            A dictionary mapping of species and factor keys to their
             matching factors.
 
         """
@@ -316,7 +377,8 @@ class Experiment:
 
     @property
     def as_markdown(self):
-        text = f"### {self.assay_title}\n"
+        """Creates a markdown representation of this object."""
+        text = f"### {self.name}\n"
         for sample in self.samples:
             text += sample.as_markdown
 
@@ -333,10 +395,11 @@ class Experiment:
 class Node:
     """Model for a single Drupal content node.
 
-    Much of this class is declarative, with the Param package doing all of the
-    heavy-lifting in the background.
+    Much of this class is declarative, with the Param package doing
+    all of the heavy-lifting in the background.
 
     """
+
     experiments: List
     node_information: dict = None
     factors: List[Factor] = None

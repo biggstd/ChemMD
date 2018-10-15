@@ -1,35 +1,27 @@
-chemmd.models package
-=====================
+Models
+======
 
-chemmd.models.core module
--------------------------
+Core Models
+-----------
 
 .. automodule:: chemmd.models.core
     :members:
     :undoc-members:
     :show-inheritance:
 
-chemmd.models.nodal module
---------------------------
+Nodal Models
+------------
 
 .. automodule:: chemmd.models.nodal
     :members:
     :undoc-members:
     :show-inheritance:
 
-chemmd.models.util module
--------------------------
+Model Utilities
+---------------
 
 .. automodule:: chemmd.models.util
     :members:
     :undoc-members:
     :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: chemmd.models
-    :members:
-    :undoc-members:
-    :show-inheritance:

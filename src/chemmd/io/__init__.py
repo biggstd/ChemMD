@@ -18,7 +18,6 @@ with the use of ``query groups``.
 # These functions will be available as `chemmd.io.func`.
 # ----------------------------------------------------------------------------
 from .input import (read_chemmd_json,
-                    load_csv_as_dict,
                     create_nodes_from_files,
                     node_from_path)
 

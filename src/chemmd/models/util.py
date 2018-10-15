@@ -7,9 +7,14 @@
 # ----------------------------------------------------------------------------
 
 # Generic Python imports.
+import csv
 import itertools
+import os
 import uuid
+import collections
 from typing import Any, List
+
+from .. import config
 
 
 def ensure_list(val_or_values: Any) -> List:
@@ -78,3 +83,35 @@ def create_uuid(metadata_node):
     the same node objects return the same uuid.
     """
     return str(uuid.uuid3(uuid.NAMESPACE_DNS, str(metadata_node)))
+
+
+def load_csv_as_dict(path: str, base_path: str = config["BASE_PATH"]
+                     ) -> dict:
+    """Load a CSV file as a Python dictionary.
+
+    The header in each file will be skipped.
+
+    :param path: The path to the .csv in question.
+    :param base_path: The path to prepend to the path given above.
+    :return: A dictionary object with integer keys representing the csv
+        column index the data was found in.
+
+    """
+    csv_path = os.path.join(base_path, path)
+    data = collections.defaultdict(list)
+
+    # Open the file and create a reader (an object that when iterated
+    # on gives the values of each row.
+    with open(csv_path) as csv_file:
+        reader = csv.DictReader(csv_file)
+
+        # Pop the header and get its length.
+        field_int_index = range(len(next(reader)))
+        field_int_index = [str(x) for x in field_int_index]
+
+        # Iterate over the remaining rows and append the data.
+        for row in reader:
+            for idx, header in zip(field_int_index, reader.fieldnames):
+                data[idx].append(float(row[header]))
+
+    return dict(data)

@@ -1,29 +1,17 @@
-chemmd.display package
-======================
+Display
+=======
 
-Subpackages
------------
+Views
+-----
 
 .. toctree::
 
     chemmd.display.views
 
-Submodules
-----------
-
-chemmd.display.helpers module
------------------------------
+Helpers
+-------
 
 .. automodule:: chemmd.display.helpers
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: chemmd.display
     :members:
     :undoc-members:
     :show-inheritance:

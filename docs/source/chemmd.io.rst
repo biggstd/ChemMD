@@ -1,38 +1,27 @@
-chemmd.io package
-=================
+Input / Output
+==============
 
-Submodules
-----------
 
-chemmd.io.input module
-----------------------
+Input
+-----
 
 .. automodule:: chemmd.io.input
     :members:
     :undoc-members:
     :show-inheritance:
 
-chemmd.io.output module
------------------------
+Output
+------
 
 .. automodule:: chemmd.io.output
     :members:
     :undoc-members:
     :show-inheritance:
 
-chemmd.io.transforms module
----------------------------
+Transforms
+----------
 
 .. automodule:: chemmd.io.transforms
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: chemmd.io
     :members:
     :undoc-members:
     :show-inheritance:

@@ -1,8 +1,4 @@
 """
-Core Models
-###########
-
-**Overview**
 
 Core models are those that make up the fundamental data / metadata
 blocks which model a users data. Of these, the ``Factor`` and
@@ -43,12 +39,19 @@ class Factor:
     files, as well as 'single-valued' data (eg. experimental temperature).
 
     """
+
     factor_type: str
+    """The type of factor represented by this instance."""
     decimal_value: float = None
+    """The optional decimal value of this instance."""
     string_value: str = None
+    """The optional string value of this instance."""
     reference_value: str = None
+    """The optional reference string value of this instance."""
     unit_reference: str = None
+    """The unit in which this data of this instance is described."""
     csv_column_index: int = None
+    """The column index (if applicable) of this instance (if applicable)."""
 
     @property
     def label(self) -> Tuple[str]:
@@ -124,11 +127,22 @@ class SpeciesFactor:
 
     """
     species_reference: str
+    """The user-given string representation of this species."""
     stoichiometry: float = 1.0
+    """The user-supplied stoichiometry coefficient for this species.
+    This value only references stoichiometry within the same
+    ``Sample`` or ``Source`` object."""
 
     def query(self, query_term) -> bool:
         """A boolean search function. Returns True if the query term
         is found, and False otherwise.
+
+        Args:
+            query_term (str): A single string to check against this
+            object's ``species_reference``.
+
+        Returns:
+            bool: True if ``query_term`` is found, False otherwise.
 
         """
         if re.match(query_term, self.species_reference):
@@ -145,16 +159,19 @@ class SpeciesFactor:
 class Comment:
     """A node comment model.
 
-    Holds data for a comment and functions for viewing those comment
-    values as HTML.
+    Holds data for a comment and functions for viewing those
+    comment values as HTML.
 
     """
 
     comment_title: str
+    """A user-given name or title of the comment."""
     comment_body: str = None
+    """The body of the comment."""
 
     @property
     def as_markdown(self):
+        """Formats the contents of this comment as Markdown."""
         return dedent(f"""\
             **{self.name}**: {self.body}\n
         """)
@@ -172,11 +189,19 @@ class DataFile:
 
 class QueryGroup(NamedTuple):
     column_name: str
+    """The user-given name of the column this group will create."""
     factor_filters: Tuple[str, ...]
+    """The filters to be applied to ``Factor`` instances."""
     species_filters: Tuple[str, ...]
+    """The filters to be applied to ``SpeciesFactor`` instances."""
 
 
 class DerivedGroup(NamedTuple):
     column_name: str
+    """The user-given name of the column this group will create."""
     source_names: Tuple[str, ...]
+    """The existing columns that make up the values used by
+    ``callable_``."""
     callable_: Callable
+    """The function to be applied to those values pulled from
+    ``source_names``."""

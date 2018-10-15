@@ -1,8 +1,5 @@
-chemmd.display.views.custom\_js package
-=======================================
-
-Module contents
----------------
+Custom JavaScript
+=================
 
 .. automodule:: chemmd.display.views.custom_js
     :members:

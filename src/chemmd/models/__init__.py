@@ -1,5 +1,16 @@
 """
 
+#############
+ChemMD Models
+#############
+
+**Overview**
+
+These models are combined to create a nested metadata structure. The top-most
+level being the ``Node``, which contains the contents of one Drupal content
+node.
+
+
 """
 
 # ----------------------------------------------------------------------------

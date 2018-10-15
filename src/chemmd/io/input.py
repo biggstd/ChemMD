@@ -1,17 +1,13 @@
 # ----------------------------------------------------------------------------
 # Imports -- Standard Python Library
 # ----------------------------------------------------------------------------
-import csv
 import json
 import logging
-import os
-import collections
 from typing import List
 
 # ----------------------------------------------------------------------------
 # Local package imports.
 # ----------------------------------------------------------------------------
-from .. import config
 from ..models import (Factor, SpeciesFactor, Comment, ElementalTypes,
                       NodeTypes, Source, Sample, Experiment, Node)
 
@@ -116,36 +112,6 @@ def parse_node_json(json_dict: dict) -> Node:
 # ----------------------------------------------------------------------------
 # CSV Data Input.
 # ----------------------------------------------------------------------------
-def load_csv_as_dict(path: str, base_path: str = config["BASE_PATH"]
-                     ) -> dict:
-    """Load a CSV file as a Python dictionary.
-
-    The header in each file will be skipped.
-
-    :param path: The path to the .csv in question.
-    :param base_path: The path to prepend to the path given above.
-    :return: A dictionary object with integer keys representing the csv
-        column index the data was found in.
-
-    """
-    csv_path = os.path.join(base_path, path)
-    data = collections.defaultdict(list)
-
-    # Open the file and create a reader (an object that when iterated
-    # on gives the values of each row.
-    with open(csv_path) as csv_file:
-        reader = csv.DictReader(csv_file)
-
-        # Pop the header and get its length.
-        field_int_index = range(len(next(reader)))
-        field_int_index = [str(x) for x in field_int_index]
-
-        # Iterate over the remaining rows and append the data.
-        for row in reader:
-            for idx, header in zip(field_int_index, reader.fieldnames):
-                data[idx].append(float(row[header]))
-
-    return dict(data)
 
 
 def create_nodes_from_files(json_files: List[str]) -> List[Node]:
