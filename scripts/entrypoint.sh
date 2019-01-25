@@ -19,6 +19,7 @@ if [ "$CHEMMD_CONFIG" == "TESTING" ]; then
       --address 0.0.0.0\
       --log-level debug\
       --allow-websocket-origin localhost:8001\
+      --allow-websocket-origin 127.0.0.1:5006\
         tests/bokeh_tests/table_test \
         tests/bokeh_tests/scatter_test \
         tests/bokeh_testes/scatter_table_combo_test
@@ -29,6 +30,7 @@ else
       --use-xheaders\
       --address 0.0.0.0\
       --allow-websocket-origin=130.20.47.245:8123\
+      --allow-websocket-origin=127.0.0.1:5006\
       --allow-websocket-origin localhost:8123\
       --allow-websocket-origin localhost:8001\
       --allow-websocket-origin idreamvisualization.pnl.gov\
