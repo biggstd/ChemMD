@@ -7,36 +7,17 @@ for analysis and visualization.*
 [![BCH compliance](https://bettercodehub.com/edge/badge/biggstd/ChemMD?branch=master)](https://bettercodehub.com/)
 [![Build Status](https://travis-ci.org/biggstd/ChemMD.svg?branch=master)](https://travis-ci.org/biggstd/ChemMD)
 
-**To do:**
+Program Description
+-------------------
 
-+ [x] Refactor query group objects.
-+ [ ] Create tutorials and place in documentation.
-+ [ ] Repair typos within assays on Drupal.
-+ [ ] Host documentation with PNNL? Or on readthedocs.
-+ [ ] Fix bug causing the first row of .csv files to be dropped.
-+ [ ] Complete query group setup on Drupal.
-    *These should be content types that the user selects.*
-+ [ ] Update metadata views.
-+ [x] Fix UI on experiment creation on Drupal.
-+ [x] DockerHub integration.
-+ [x] Travis CI integration.
-+ [x] Complete `ChemMD` repository setup.
-    + [x] Apply new structure to Bokeh applications.
-    + [x] Generic Scatter with a data table application.
-    + [x] Data table application.
-    + [x] Describe commands in `entrypoint.sh`.
-+ [x] Add download button to table views.
-    + [ ] Convert download to generic, only works in one case now.
-+ [x] Better code integration.
-+ [x] Complete tests setup for `ChemMD`.
-+ [x] Repair `io` functions.
-+ [x] Update `bokeh` tests.
-    + [x] Repair `bokeh` application tests.
-+ [ ] Improve logging output.
-+ [ ] Further update tests.
-+ [ ] Sphinx documentation setup.
-+ [ ] Add a license.
-+ [ ] Bettercode recommendations and re-factors.
+`ChemMD` interprets a set of .json files, informed by an HTML session
+request, served to a `bokeh` application. These metadata .json files
+describe and point to data .csv files (provided to the application),
+which are then visualized for the user.
+
+Specifications for each .json object type can be found in the
+`scr/chemmd/chemmd_schema.json`. *The query group specification has
+not yet been created.*
 
 Folder Descriptions
 -------------------
@@ -124,3 +105,23 @@ docker run -p 0.0.0.1:8001:5006\
   -e "CHEMMD_CONFIG=TESTING"\
   -t -d --name chemmd tylerbiggs/chemmd:VERSION
 ```
+
+**To do:**
+
++ [x] Refactor query group objects.
++ [ ] Add query group .json specification.
++ [ ] Update README.
++ [ ] Create tutorials and place in documentation.
++ [ ] Repair typos within assays on Drupal.
++ [ ] Host documentation with PNNL? Or on readthedocs.
++ [ ] Fix bug causing the first row of .csv files to be dropped.
++ [ ] Complete query group setup on Drupal.
+    *These should be content types that the user selects.*
++ [ ] Update metadata views.
++ [x] Add download button to table views.
+    + [ ] Convert download to generic, only works in one case now.
++ [ ] Improve logging output.
++ [ ] Further update tests.
++ [ ] Sphinx documentation setup.
++ [ ] Add a license.
++ [ ] Bettercode recommendations and re-factors.
