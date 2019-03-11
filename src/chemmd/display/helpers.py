@@ -92,12 +92,12 @@ def get_session_groups(current_document: bk.document.Document,
     :return:
     """
     arguments = current_document.session_context.request.arguments
-    group_path = arguments.get(HTTP_QUERY_STRING)[0].decode("utf-8")
+    # group_path = arguments.get(HTTP_QUERY_STRING)[0].decode("utf-8")
     # The data should always be found in the "data" sub-directory.
     # It is placed there by the Drupal server.
-    group_file = os.path.join(base_path, group_path)
+    group_file = os.path.join(base_path, 'gq.json')
 
-    with open('gq.json', "r") as file:
+    with open(group_file, "r") as file:
         data = json.load(file)
 
     logger.info(f"Session groups found at: {group_file}")
