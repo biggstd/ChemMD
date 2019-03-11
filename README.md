@@ -45,8 +45,8 @@ File Descriptions
 + `.travis.yml` A travis.ci workflow file.
 + `Dockerfile` A file which defines the Docker image with
    ChemMD and associated visualizations. The image launches
-   a Bokeh server by default. 
-+ `LICENSE.txt` 
+   a Bokeh server by default.
++ `LICENSE.txt`
 + `README.md` This readme file.
 + `requirements.txt` A list of Python packages needed for
    ChemMD to function.
@@ -110,6 +110,7 @@ docker run -p 0.0.0.1:8001:5006\
 
 + [x] Refactor query group objects.
 + [ ] Add query group .json specification.
++ [ ] Update .json specificatio diagram.
 + [ ] Update README.
 + [ ] Create tutorials and place in documentation.
 + [ ] Repair typos within assays on Drupal.
