@@ -38,10 +38,15 @@ class Factor:
     This allows the factor to model / label data contained in user uploaded
     files, as well as 'single-valued' data (eg. experimental temperature).
 
+    Types:
+        + Measurement
+        + Reference
+
     """
 
     factor_type: str
-    """The type of factor represented by this instance."""
+    """The type of factor represented by this instance. This should be one of:
+    Measurement, Condition"""
     decimal_value: float = None
     """The optional decimal value of this instance."""
     string_value: str = None

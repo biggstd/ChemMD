@@ -80,7 +80,7 @@ def get_session_json_paths(current_document: bk.document.Document,
     logger.info(f"Json file path found to be: {file_path}")
 
     return [json_file for json_file in
-            glob.glob(f"{file_path}/*.json")]
+            glob.glob(f"{file_path}/*[!gq].json")]
 
 
 def get_session_groups(current_document: bk.document.Document,
