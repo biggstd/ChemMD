@@ -13,8 +13,16 @@ import os
 import uuid
 import collections
 from typing import Any, List
+import pandas as pd
+import logging
+
+import io
+import requests
 
 from .. import config
+
+
+logger = logging.getLogger(__name__)
 
 
 def ensure_list(val_or_values: Any) -> List:
@@ -70,7 +78,8 @@ def get_all_elements(node,
                                  for container in element_containers]
 
             # Flatten the list returned, and extend the output list with the new values.
-            element_list.extend(itertools.chain.from_iterable(children_elements))
+            element_list.extend(
+                itertools.chain.from_iterable(children_elements))
 
     return element_list
 
@@ -85,8 +94,8 @@ def create_uuid(metadata_node):
     return str(uuid.uuid3(uuid.NAMESPACE_DNS, str(metadata_node)))
 
 
-def load_csv_as_dict(path: str, base_path: str = config["BASE_PATH"]
-                     ) -> dict:
+def load_csv_as_dict(path: str, base_path: str = config["BASE_PATH"],
+                     mode: str = config["CSV_READ_MODE"]) -> dict:
     """Load a CSV file as a Python dictionary.
 
     The header in each file will be skipped.
@@ -97,13 +106,34 @@ def load_csv_as_dict(path: str, base_path: str = config["BASE_PATH"]
         column index the data was found in.
 
     """
-    csv_path = os.path.join(base_path, path)
-    data = collections.defaultdict(list)
+    def local_read():
+        csv_path = os.path.join(base_path, path)
+        # df = pd.read_csv(csv_path)
+        # df.columns = [str(x) for x in range(len(df.columns))]
+        # return df.to_dict()
+        data = collections.defaultdict(list)
+        # Open the file and create a reader (an object that when iterated
+        # on gives the values of each row.
+        with open(csv_path) as csv_file:
+            reader = csv.DictReader(csv_file)
+            # Pop the header and get its length.
+            field_int_index = range(len(next(reader)))
+            field_int_index = [str(x) for x in field_int_index]
 
-    # Open the file and create a reader (an object that when iterated
-    # on gives the values of each row.
-    with open(csv_path) as csv_file:
-        reader = csv.DictReader(csv_file)
+            # Iterate over the remaining rows and append the data.
+            for row in reader:
+                for idx, header in zip(field_int_index, reader.fieldnames):
+                    data[idx].append(float(row[header]))
+
+        return dict(data)
+
+    def remote_read():
+        logger.debug(f'Remote reading url: {path}')
+
+        data = collections.defaultdict(list)
+        content = requests.get(path).content
+        content = io.StringIO(content.decode('utf-8'))
+        reader = csv.DictReader(content)
 
         # Pop the header and get its length.
         field_int_index = range(len(next(reader)))
@@ -114,4 +144,11 @@ def load_csv_as_dict(path: str, base_path: str = config["BASE_PATH"]
             for idx, header in zip(field_int_index, reader.fieldnames):
                 data[idx].append(float(row[header]))
 
-    return dict(data)
+        return dict(data)
+
+    read_modes = {
+        "REMOTE": remote_read,
+        "LOCAL": local_read,
+    }
+
+    return read_modes[mode]()

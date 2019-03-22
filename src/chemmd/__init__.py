@@ -59,7 +59,7 @@ import pkg_resources
 # a development environment and load the default config. This should fail
 # on the Docker image (production) as the default configuration file will
 # not be available.
-config_env = os.environ.get("CHEMMD_CONFIG", "DEFAULT")
+config_env = os.environ.get("CHEMMD_CONFIG", "TESTING")
 config_path = os.environ.get("CHEMMD_CONFIG_PATH")
 
 
