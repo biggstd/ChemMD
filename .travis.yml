@@ -10,6 +10,6 @@ services:
     - docker
 
 script:
-    - docker build -t tylerbiggs/chemmd:$TRAVIS_BUILD_NUMBER .
+    - docker build -t tylerbiggs/chemmd:latest .
     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-    - docker push tylerbiggs/chemmd:$TRAVIS_BUILD_NUMBER
+    - docker push tylerbiggs/chemmd:latest
