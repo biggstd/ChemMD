@@ -24,7 +24,7 @@ if [ "$CHEMMD_CONFIG" == "TESTING" ]; then
       --allow-websocket-origin idream-viz.pnnl.gov\
         tests/bokeh_tests/table_test\
         tests/bokeh_tests/scatter_test\
-        tests/bokeh_testes/scatter_table_combo_test
+        tests/bokeh_tests/scatter_table_combo_test
 else
     echo "Starting production Bokeh server..."
     bokeh serve\
