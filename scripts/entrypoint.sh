@@ -20,10 +20,10 @@ if [ "$CHEMMD_CONFIG" == "TESTING" ]; then
       --log-level debug\
       --allow-websocket-origin localhost:8001\
       --allow-websocket-origin 127.0.0.1:5006\
-      --allow-websocket-origin idreamvisualization.pnl.gov
-      --allow-websocket-origin idream-viz.pnnl.gov 
-        tests/bokeh_tests/table_test \
-        tests/bokeh_tests/scatter_test \
+      --allow-websocket-origin idreamvisualization.pnl.gov\
+      --allow-websocket-origin idream-viz.pnnl.gov\
+        tests/bokeh_tests/table_test\
+        tests/bokeh_tests/scatter_test\
         tests/bokeh_testes/scatter_table_combo_test
 else
     echo "Starting production Bokeh server..."
